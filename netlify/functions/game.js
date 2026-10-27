@@ -33,19 +33,19 @@ const MAX_RETRIES = 4;
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function store() {
-  // In Netlify Functions (production) the environment variable AWS_LAMBDA_FUNCTION_NAME is set.
-  // The runtime file system is read‑only, so we must NOT attempt to write a JSON file.
-  const isProd = Boolean(process.env.AWS_LAMBDA_FUNCTION_NAME);
-
-  if (isProd) {
-    // Require Netlify Blobs – let any error surface (misconfiguration) instead of silencing.
-    const { getStore } = require('@netlify/blobs');
-    return getStore({ name: STORE_NAME, consistency: 'strong' });
+function store(event = {}) {
+  // Connect Netlify Blobs store. In Netlify Functions, connectLambda integrates with Lambda context.
+  const { connectLambda, getStore } = require('@netlify/blobs');
+  // Call connectLambda only if event has properties (i.e., real Lambda event)
+  if (typeof connectLambda === 'function' && Object.keys(event).length > 0) {
+    connectLambda(event);
   }
-
-
-  }
+  // Provide siteID and token if set, otherwise rely on env defaults.
+  const opts = { name: STORE_NAME, consistency: 'strong' };
+  if (process.env.NETLIFY_SITE_ID) opts.siteID = process.env.NETLIFY_SITE_ID;
+  if (process.env.NETLIFY_AUTH_TOKEN) opts.token = process.env.NETLIFY_AUTH_TOKEN;
+  return getStore(opts);
+}
 
 function corsHeaders() {
   return {
@@ -67,10 +67,12 @@ async function readRoom(s, key) {
 }
 
 async function writeRoom(s, key, data, etag) {
-  const onlyIf = etag !== null ? { etag } : { exists: false };
+  // Use optimistic concurrency control supported by Netlify Blobs.
+  const opts = etag !== null ? { onlyIfMatch: etag } : { onlyIfNew: true };
   try {
-    await s.setJSON(key, data, { onlyIf });
-    return true;
+    const res = await s.setJSON(key, data, opts);
+    // setJSON resolves { modified, etag }. When a conflict occurs, modified is false.
+    return res.modified === true;
   } catch (e) {
     const msg    = String(e?.message || '');
     const status = e?.status || e?.statusCode || 0;
@@ -110,7 +112,7 @@ exports.handler = async function(event) {
 
   let s;
   try {
-    s = store();
+    s = store(event);
   } catch (e) {
     console.error('[signal-shift] Store init error:', e);
     return fail(500, e.message);
@@ -277,9 +279,8 @@ async function handleStartGame(s, body) {
     const playersWithRoles = assignRoles(connected);
     const roleIds = playersWithRoles.map(p => p.role);
     const schedule = generateEmergencySchedule(now, connected.length, roleIds);
-    // Deterministic emergency for integration tests when testMode flag is set
-    // Deterministic emergency for integration tests – only active in non‑production environments.
-    if (body.testMode && process.env.NODE_ENV !== 'production') {
+    // Deterministic emergency for integration tests – only active when ENABLE_TEST_MODE is true
+    if (body.testMode && process.env.ENABLE_TEST_MODE === 'true') {
       schedule.unshift({
         id: `em_test_nav_${now}`,
         spawnAt: now + 2000,
@@ -287,8 +288,8 @@ async function handleStartGame(s, body) {
         severity: 1
       });
     }
-    // Deterministic nav_failure emergency for integration tests
-    if (process.env.NODE_ENV === 'test') {
+    // Deterministic nav_failure emergency for integration tests when ENABLE_TEST_MODE is true
+    if (process.env.NODE_ENV === 'test' && process.env.ENABLE_TEST_MODE === 'true') {
       schedule.unshift({
         id: `em_test_nav_${now}`,
         spawnAt: now + 2000,
@@ -304,7 +305,7 @@ async function handleStartGame(s, body) {
 
     room.phase = 'playing';
     // Use shortened duration for test mode so integration tests finish quickly
-    const roundDuration = (body.testMode && process.env.NODE_ENV !== 'production') ? 30000 : ROUND_DURATION_MS;
+    const roundDuration = (body.testMode && process.env.ENABLE_TEST_MODE === 'true') ? 30000 : ROUND_DURATION_MS;
     room.round = {
       startedAt: now,
       updatedAt: now,
@@ -366,7 +367,7 @@ async function handlePlayerAction(s, body) {
         return fail(400, `Crew response on cooldown for ${Math.ceil((crUntil - now) / 1000)} more seconds`);
       }
       const crEm = targetEmergencyId
-        ? round.activeEmergencies.find(e => e.id === targetEmergencyId && !e.resolvedAt)
+        ? round.activeEmergencies.find(e => e.id === targetEmergencyId && !e.resolvedAt && e.typeId === 'radiation_burst')
         : round.activeEmergencies.find(e => !e.resolvedAt && e.typeId === 'radiation_burst');
       if (!crEm) return fail(400, 'No all-hands emergency to respond to right now.');
 
@@ -607,7 +608,7 @@ async function handleRematch(s, body) {
     room.round = {
       startedAt: now,
       // Use shortened duration for tests to ensure timely results
-      duration: (process.env.NODE_ENV === 'test' || body.testMode) ? 30000 : ROUND_DURATION_MS,
+      duration: (process.env.ENABLE_TEST_MODE === 'true' && (process.env.NODE_ENV === 'test' || body.testMode)) ? 30000 : ROUND_DURATION_MS,
       hullIntegrity: INITIAL_HULL,
       score: 0,
       emergenciesResolved: 0,
@@ -657,79 +658,72 @@ async function handlePing(s, body) {
 // Sanitize Room for Client
 // Strips server-only fields, adds computed fields, scopes cooldowns to requester
 // ════════════════════════════════════════════════════════════════════════════
-
 function sanitize(room, myPlayerId) {
   const now = Date.now();
 
+  // Build public player list with flags and hide secret IDs
+  const players = room.players.map((p, idx) => ({
+    publicId: `pid_${idx + 1}`,
+    nickname: p.nickname,
+    role: p.role,
+    connected: p.connected,
+    isHost: p.id === room.hostId,
+    isMe: p.id === myPlayerId
+  }));
+
   const out = {
     roomCode: room.roomCode,
-    hostId:   room.hostId,
-    phase:    room.phase,
-    isHost:   room.hostId === myPlayerId,
-    // expose round updatedAt for comparisons
+    phase: room.phase,
+    isHost: room.hostId === myPlayerId,
     updatedAt: room.round ? room.round.updatedAt : undefined,
-    players:  room.players.map(p => ({
-      id:        p.id,
-      nickname:  p.nickname,
-      role:      p.role,
-      connected: p.connected,
-      isHost:    p.id === room.hostId,
-      isMe:      p.id === myPlayerId
-    }))
+    players
   };
 
   if (room.phase === 'playing' && room.round) {
-    const r       = room.round;
+    const r = room.round;
     const elapsed = now - r.startedAt;
     const remaining = Math.max(0, r.duration - elapsed);
 
-    // Compute cooldowns scoped to the requesting player
-    const myCooldowns = (() => {
-      const me = room.players.find(p => p.id === myPlayerId);
-      if (!me?.role) return {};
-      const roleDef = ROLES.find(rl => rl.id === me.role);
-      if (!roleDef) return {};
-      const cds = {};
-      for (const a of roleDef.abilities) {
-        const until = r.repairCooldowns[`${myPlayerId}__${a.id}`] || 0;
-        cds[a.id] = Math.max(0, until - now);
+    // Compute cooldowns for this player
+    const myCooldowns = {};
+    for (const key of Object.keys(r.repairCooldowns)) {
+      if (key.startsWith(`${myPlayerId}__`)) {
+        const abilityId = key.split('__')[1];
+        myCooldowns[abilityId] = Math.max(0, r.repairCooldowns[key] - now);
       }
-      // crew_respond is usable by any player for radiation_burst
-      cds['crew_respond'] = Math.max(0, (r.repairCooldowns[`${myPlayerId}__crew_respond`] || 0) - now);
-      return cds;
-    })();
+    }
+
+    // Map active emergencies, hide secret IDs
+    const activeEmergencies = (r.activeEmergencies || []).map(em => {
+      const def = EMERGENCY_TYPES.find(e => e.id === em.typeId) || {};
+      return {
+        id: em.id,
+        typeId: em.typeId,
+        name: def.name || em.typeId,
+        icon: def.icon || '⚠️',
+        description: def.description || '',
+        severity: em.severity,
+        spawnedAt: em.spawnedAt,
+        expiresAt: em.expiresAt,
+        resolvedAt: em.resolvedAt,
+        resolvedByNickname: em.resolvedByNickname,
+        timeLeftMs: em.resolvedAt ? 0 : Math.max(0, em.expiresAt - now),
+        resolveRole: def.resolveRole || null,
+        altRole: def.altRole || null,
+        anyCanResolve: !def.resolveRole
+      };
+    });
 
     out.round = {
-      remainingMs:         remaining,
-      elapsedMs:           elapsed,
-      hullIntegrity:       Math.max(0, Math.round(r.hullIntegrity * 10) / 10),
-      score:               r.score || 0,
+      remainingMs: remaining,
+      elapsedMs: elapsed,
+      hullIntegrity: Math.max(0, Math.round(r.hullIntegrity * 10) / 10),
+      score: r.score || 0,
       emergenciesResolved: r.emergenciesResolved || 0,
-      lastAction:          r.lastAction,
-      broadcastAlert:      r.broadcastAlert,
-      updatedAt:           r.updatedAt,
-      activeBuffs: (r.activeBuffs || [])
-        .filter(b => b.expiresAt > now)
-        .map(b => ({ id: b.id, remainingMs: b.expiresAt - now })),
-      activeEmergencies: r.activeEmergencies.map(em => {
-        const def = EMERGENCY_TYPES.find(e => e.id === em.typeId);
-        return {
-          id:                  em.id,
-          typeId:              em.typeId,
-          name:                def?.name       || em.typeId,
-          icon:                def?.icon       || '⚠️',
-          description:         def?.description|| '',
-          severity:            em.severity,
-          spawnedAt:           em.spawnedAt,
-          expiresAt:           em.expiresAt,
-          resolvedAt:          em.resolvedAt,
-          resolvedByNickname:  em.resolvedByNickname,
-          timeLeftMs:          em.resolvedAt ? 0 : Math.max(0, em.expiresAt - now),
-          resolveRole:         def?.resolveRole || null,
-          altRole:             def?.altRole    || null,
-          anyCanResolve:       !def?.resolveRole
-        };
-      }),
+      broadcastAlert: r.broadcastAlert,
+      lastAction: r.lastAction,
+      activeBuffs: (r.activeBuffs || []).map(b => ({ id: b.id, remainingMs: b.expiresAt - now })),
+      activeEmergencies,
       myCooldowns
     };
   }
@@ -737,14 +731,21 @@ function sanitize(room, myPlayerId) {
   if (room.phase === 'results' && room.round) {
     const r = room.round;
     out.results = {
-      outcome:             r.outcome,
-      finalScore:          r.finalScore || 0,
-      survivedSeconds:     r.survivedSeconds || 0,
+      outcome: r.outcome,
+      finalScore: r.finalScore || 0,
+      survivedSeconds: r.survivedSeconds || 0,
       emergenciesResolved: r.emergenciesResolved || 0,
-      hullIntegrity:       Math.round((r.hullIntegrity || 0) * 10) / 10,
-      causeOfDeath:        r.causeOfDeath || null
+      hullIntegrity: Math.round((r.hullIntegrity || 0) * 10) / 10,
+      causeOfDeath: r.causeOfDeath || null
     };
   }
 
   return out;
 }
+
+
+// Export functions for testing
+module.exports.sanitize = sanitize;
+module.exports.writeRoom = writeRoom;
+module.exports.store = store;
+

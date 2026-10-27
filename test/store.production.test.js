@@ -9,7 +9,8 @@ const storeFile = path.resolve(__dirname, '..', '..', '.netlify_mock_store.json'
 
 // Preserve original env
 const originalEnv = process.env.AWS_LAMBDA_FUNCTION_NAME;
-process.env.AWS_LAMBDA_FUNCTION_NAME = 'test-prod';
+process.env.NETLIFY_SITE_ID = 'dummy-site-id';
+process.env.NETLIFY_AUTH_TOKEN = 'dummy-token';
 
 const { _store } = require('../netlify/functions/game');
 

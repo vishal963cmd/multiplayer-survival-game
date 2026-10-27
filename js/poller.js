@@ -15,10 +15,10 @@ window.Poller = (function() {
   let pollActive  = false; // prevent overlapping polls
 
   function start(rc, pid) {
+    stop(); // clear any existing timer
     roomCode = rc;
     playerId = pid;
-    running  = true;
-    stop(); // clear any existing timer
+    running = true;
     _poll(); // immediate first poll
     timer = setInterval(_poll, POLL_INTERVAL_MS);
   }

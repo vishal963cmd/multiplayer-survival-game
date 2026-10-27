@@ -88,7 +88,8 @@ window.UI = (function() {
     // Start button visibility and enabled state
     const startBtn = document.getElementById('btn-start-game');
     const show    = room.isHost;
-    const enabled = room.isHost && room.players.length >= 2;
+    const connectedCount = room.players.filter(p => p.connected).length;
+      const enabled = room.isHost && connectedCount >= 2;
     startBtn.style.display = show ? '' : 'none';
     startBtn.disabled = !enabled;
 
