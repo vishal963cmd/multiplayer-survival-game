@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="Signal Shift: Survive Together — Real-time multiplayer sci-fi survival game. Coordinate your crew, fix emergencies, and keep the ship flying. No account needed.">
+  <meta name="theme-color" content="#020812">
+  <meta property="og:title" content="Signal Shift: Survive Together">
+  <meta property="og:description" content="A real-time multiplayer game for 2–6 players. Coordinate your spaceship crew to survive 90 seconds of escalating emergencies.">
+  <title>Signal Shift: Survive Together</title>
+
+  <!-- Emoji favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚀</text></svg>">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body style="background:radial-gradient(ellipse at 20% 60%,rgba(30,0,80,.18) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(0,60,120,.14) 0%,transparent 50%),#020812;">
+
+  <!-- Starfield canvas (animated by UI.initStars) -->
+  <canvas id="stars-canvas" aria-hidden="true"></canvas>
+
+  <!-- ── Loading Overlay ──────────────────────────────────────────────────── -->
+  <div id="loading-overlay" role="status" aria-live="polite" aria-label="Loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text" id="loading-text">Loading…</div>
+  </div>
+
+  <!-- ── Toast Container ─────────────────────────────────────────────────── -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- ── Mute Toggle ──────────────────────────────────────────────────────── -->
+  <button id="btn-mute" class="mute-btn" title="Toggle sound" aria-label="Toggle sound">🔊</button>
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       APP ROOT
+       ══════════════════════════════════════════════════════════════════════ -->
+  <div id="app">
+
+    <!-- ────────────────────────────────────────────────────────────────────
+         SPLASH SCREEN
+         ──────────────────────────────────────────────────────────────────── -->
+    <section id="screen-splash" class="screen active" aria-label="Game launch screen">
+      <div class="splash-inner">
+
+        <div class="splash-logo">
+          <div class="logo-emblem" role="img" aria-label="Spaceship">🚀</div>
+          <h1 class="logo-title">Signal Shift</h1>
+          <p class="logo-subtitle">Survive Together</p>
+        </div>
+
+        <p class="splash-tagline">
+          Coordinate your spaceship crew through 90 seconds of escalating emergencies.
+          Keep the hull above zero — or burn up together.
+        </p>
+
+        <div class="splash-actions">
+          <button id="btn-create-room" class="btn btn-primary btn-lg btn-full">
+            🚀&nbsp; Create Room
+          </button>
+          <button id="btn-join-room" class="btn btn-secondary btn-lg btn-full">
+            🔗&nbsp; Join Room
+          </button>
+        </div>
+
+        <p class="splash-footer">2 – 6 players &nbsp;·&nbsp; No account needed &nbsp;·&nbsp; Share a 6-letter code</p>
+
+      </div>
+    </section>
+
+    <!-- ────────────────────────────────────────────────────────────────────
+         NAME ENTRY SCREEN
+         ──────────────────────────────────────────────────────────────────── -->
+    <section id="screen-name" class="screen" aria-label="Player setup screen">
+      <div class="name-card glass">
+
+        <div class="name-header">
+          <h2 id="name-screen-heading">Create a New Room</h2>
+          <p id="name-screen-sub">Enter your nickname to get started.</p>
+        </div>
+
+        <!-- Only shown when joining -->
+        <div id="join-code-row" class="form-group" style="display:none">
+          <label class="form-label" for="join-code-input">Room Code</label>
+          <input
+            id="join-code-input"
+            class="form-input code-input"
+            type="text"
+            maxlength="6"
+            placeholder="ABCDEF"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            inputmode="text"
+            aria-label="6-letter room code"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="name-input">Your Nickname</label>
+          <input
+            id="name-input"
+            class="form-input"
+            type="text"
+            maxlength="20"
+            placeholder="e.g. Nova, Blaze, Orion…"
+            autocomplete="off"
+            autocorrect="off"
+            spellcheck="false"
+            aria-label="Your in-game nickname"
+          >
+        </div>
+
+        <div id="name-error" class="error-banner" role="alert"></div>
+
+        <button id="btn-name-submit" class="btn btn-primary btn-full">Continue →</button>
+        <button id="btn-name-back"   class="btn btn-ghost btn-full">← Back</button>
+
+      </div>
+    </section>
+
+    <!-- ────────────────────────────────────────────────────────────────────
+         LOBBY SCREEN
+         ──────────────────────────────────────────────────────────────────── -->
+    <section id="screen-lobby" class="screen" aria-label="Game lobby">
+      <div class="lobby-inner">
+
+        <div class="room-code-display glass">
+          <div class="room-code-label">Room Code</div>
+          <div class="room-code-value" id="lobby-room-code" aria-live="polite" aria-label="Room code">------</div>
+          <div class="room-code-hint">Share this code with your crew</div>
+        </div>
+
+        <button id="btn-copy-code" class="btn btn-secondary btn-full">
+          📋&nbsp; Copy Code
+        </button>
+
+        <div class="player-list-section glass">
+          <div class="player-list-header">
+            <div class="player-list-title">Crew Members</div>
+            <div class="player-count" id="lobby-player-count" aria-live="polite">1 / 6</div>
+          </div>
+          <div id="lobby-player-list" role="list" aria-label="Players currently in the lobby"></div>
+        </div>
+
+        <div id="lobby-error" class="error-banner" role="alert"></div>
+
+        <p class="lobby-status" id="lobby-status" aria-live="polite">Waiting for players…</p>
+
+        <div class="lobby-actions">
+          <button id="btn-start-game" class="btn btn-success btn-lg btn-full" style="display:none" aria-label="Start the game">
+            ⚡&nbsp; Launch Mission
+          </button>
+          <button id="btn-leave-lobby" class="btn btn-ghost btn-full">← Leave Room</button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ────────────────────────────────────────────────────────────────────
+         GAME SCREEN
+         ──────────────────────────────────────────────────────────────────── -->
+    <section id="screen-game" class="screen" aria-label="Game in progress">
+
+      <!-- ── HUD Bar ──────────────────────────────────────────────────── -->
+      <div class="hud-bar" role="status" aria-label="Mission status bar">
+
+        <div class="hud-timer" id="hud-timer" aria-label="Time remaining">1:30</div>
+
+        <div class="hud-center">
+          <div class="hud-hull-label">Hull</div>
+          <div class="hud-hull-bar-wrap">
+            <div class="hud-hull-bar"
+                 role="progressbar"
+                 aria-valuemin="0"
+                 aria-valuemax="100"
+                 aria-valuenow="100"
+                 aria-label="Hull integrity">
+              <div class="hud-hull-fill hull-high" id="hud-hull-fill" style="width:100%"></div>
+            </div>
+            <div class="hud-hull-num" id="hud-hull-num">100%</div>
+          </div>
+        </div>
+
+        <div class="hud-score" aria-label="Current score">
+          <div class="hud-score-label">Score</div>
+          <div class="hud-score-val" id="hud-score-val" aria-live="polite">0</div>
+        </div>
+
+      </div><!-- /.hud-bar -->
+
+      <!-- ── Game Body ────────────────────────────────────────────────── -->
+      <!-- Mobile order: emergencies → crew strip → role panel
+           Desktop order: crew (left) | emergencies (center) | role (right)
+           Reordering done with CSS flex order property.              -->
+      <div class="game-body">
+
+        <!-- Emergencies Panel — scrollable main area -->
+        <main class="emergencies-panel" aria-label="Active ship emergencies" aria-live="polite">
+          <div class="emergencies-title">Active Emergencies</div>
+          <div id="emergencies-list" role="list"></div>
+          <div id="no-emergencies" class="no-emergencies" style="display:none" aria-label="No active emergencies">
+            <div class="no-emergencies-icon" aria-hidden="true">✓</div>
+            <div class="no-emergencies-text">All systems nominal — stay alert!</div>
+          </div>
+        </main>
+
+        <!-- Crew Panel — horizontal strip on mobile, left sidebar on desktop -->
+        <aside class="crew-panel" aria-label="Crew member status">
+          <div class="crew-panel-title">Crew</div>
+          <div id="crew-list" role="list" aria-label="Connected crew members"></div>
+        </aside>
+
+        <!-- Role & Abilities Panel — bottom on mobile, right sidebar on desktop -->
+        <aside class="role-panel" aria-label="Your role and abilities">
+          <div class="role-header">
+            <div class="role-icon-large" id="my-role-icon" aria-hidden="true">⏳</div>
+            <div>
+              <div class="role-title" id="my-role-name">Assigning…</div>
+              <div class="role-subtitle" id="my-role-desc"></div>
+            </div>
+          </div>
+          <div class="buffs-strip" id="buffs-strip" role="list" aria-label="Active buffs and effects"></div>
+          <div class="abilities-list" id="abilities-list" role="group" aria-label="Available abilities"></div>
+        </aside>
+
+      </div><!-- /.game-body -->
+
+    </section><!-- /#screen-game -->
+
+    <!-- ────────────────────────────────────────────────────────────────────
+         RESULTS SCREEN
+         ──────────────────────────────────────────────────────────────────── -->
+    <section id="screen-results" class="screen" aria-label="Mission results">
+      <div class="results-inner">
+
+        <div class="outcome-banner glass" aria-live="assertive">
+          <div class="outcome-icon" id="outcome-icon" aria-hidden="true">🏆</div>
+          <h2 class="outcome-title" id="outcome-title">MISSION COMPLETE</h2>
+          <p class="outcome-subtitle" id="outcome-subtitle">The crew survived!</p>
+        </div>
+
+        <div class="score-card glass">
+          <div class="score-main">
+            <div class="score-label">Final Score</div>
+            <div class="score-number" id="final-score" aria-live="polite">0</div>
+          </div>
+          <div class="score-breakdown" id="score-breakdown" role="table" aria-label="Score breakdown"></div>
+        </div>
+
+        <div id="results-error" class="error-banner" role="alert"></div>
+
+        <div class="results-actions">
+          <button id="btn-rematch"    class="btn btn-success btn-lg btn-full" style="display:none" aria-label="Start a rematch">
+            🔄&nbsp; Rematch
+          </button>
+          <button id="btn-back-lobby" class="btn btn-ghost btn-full">← Leave Room</button>
+        </div>
+
+      </div>
+    </section>
+
+  </div><!-- /#app -->
+
+  <!-- ── Scripts — order matters ─────────────────────────────────────────── -->
+  <script src="js/gameData.js"></script>
+  <script src="js/sound.js"></script>
+  <script src="js/actions.js"></script>
+  <script src="js/poller.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

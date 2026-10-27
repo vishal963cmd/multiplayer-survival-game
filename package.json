@@ -1,0 +1,19 @@
+{
+  "name": "signal-shift-survive-together",
+  "version": "1.0.0",
+  "description": "Signal Shift: Survive Together — Real-time multiplayer browser game",
+  "private": true,
+  "scripts": {
+    "dev": "netlify dev",
+    "test": "node test/gameRules.test.js"
+  },
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
