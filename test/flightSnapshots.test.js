@@ -16,5 +16,13 @@ assert.equal(isOlder(stateAt(20, 'match-b'), {
   phase: 'results', matchId: 'match-a', updatedAt: 19, round: { updatedAt: 19 }
 }), true, 'a delayed previous-match results response cannot end the rematch');
 assert.equal(isOlder(stateAt(20), { phase: 'results', matchId: 'match-a', round: { updatedAt: 19 } }), false);
+const destroyedAt = { phase: 'playing', matchId: 'match-a', round: { updatedAt: 30, flight: {
+  asteroids: [], weaponEvents: [{ id: 'shot_1', asteroidId: 'rock_1', destroyed: true }]
+} } };
+const staleTargetSnapshot = { phase: 'playing', matchId: 'match-a', round: { updatedAt: 29, flight: {
+  asteroids: [{ id: 'rock_1' }], weaponEvents: [{ id: 'shot_1', asteroidId: 'rock_1', destroyed: false }]
+} } };
+assert.equal(isOlder(destroyedAt, staleTargetSnapshot), true,
+  'a late pre-impact snapshot cannot restore an asteroid after the destruction event was applied');
 
 console.log('Flight snapshot tests passed (late polls cannot rewind the current match state).');

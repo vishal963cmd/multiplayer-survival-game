@@ -11,6 +11,7 @@ const translations = [];
 const gradientStops = [];
 const paintOrder = [];
 const centeredFullCircleArcs = [];
+const impactArcCenters = [];
 global.window = { devicePixelRatio: 2, Spaceflight: Flight, SceneCoordinates };
 require('../js/spaceRenderer');
 
@@ -20,6 +21,7 @@ let strokes = 0;
 let curvedTrails = 0;
 let textureCreations = 0;
 let reticleArcs = 0;
+let radialGradientCreations = 0;
 let transformCalls = 0;
 let rectWidth = 960;
 let contextOptions = null;
@@ -33,13 +35,14 @@ const ctx = new Proxy({
   stroke: () => { strokes++; drawOps++; },
   drawImage: () => { asteroidBlits++; paintOrder.push('asteroid'); drawOps++; },
   arc: (...args) => {
+    if (Math.abs(args[0] - 576) < 1 && Math.abs(args[1] - 270) < 1) impactArcCenters.push([args[0], args[1]]);
     if (Math.abs(args[0]) < 1e-9 && Math.abs(args[1]) < 1e-9 && args[3] === 0 && Math.abs(args[4] - Math.PI * 2) < 1e-9) centeredFullCircleArcs.push(args[2]);
     if ([.15, Math.PI * .65, Math.PI * 1.15, Math.PI * 1.65].includes(args[3])) reticleArcs++;
     drawOps++;
   },
   quadraticCurveTo: () => { curvedTrails++; drawOps++; },
   createLinearGradient: gradient,
-  createRadialGradient: gradient,
+  createRadialGradient: (...args) => { radialGradientCreations++; return gradient(...args); },
   get drawCount() { return drawOps; }
 }, {
   get(target, key) {
@@ -60,6 +63,30 @@ const canvas = {
 const renderer = window.SpaceRenderer.create(canvas);
 assert.equal(renderer.available, true, 'a live 2D context marks the renderer ready');
 assert.equal(contextOptions.alpha, false, 'the restored procedural background is drawn opaquely by the original Canvas');
+const clampedDisplayPoint = window.SpaceRenderer.predictProjectileDisplayPoint(
+  { x: .4, y: .5, vx: .6, vy: 0, radius: .008 },
+  { x: .6, y: .5, vx: 0, vy: 0, radius: .03 }, 1
+);
+assert.ok(clampedDisplayPoint.x < .6, 'render extrapolation clamps the pulse bolt to first contact instead of showing it beyond the asteroid');
+assert.ok(Math.abs(Math.hypot(clampedDisplayPoint.x - .6, clampedDisplayPoint.y - .5) - .038) < 1e-12,
+  'rendered pulse bolt stops at the same combined-radius surface used by authoritative collision');
+const movingTargetDisplayPoint = window.SpaceRenderer.predictProjectileDisplayPoint(
+  { x: .4, y: .5, vx: .6, vy: 0, radius: .008 },
+  { x: .6, y: .5, vx: 0, vy: .12, radius: .03 }, 1
+);
+assert.ok(movingTargetDisplayPoint.x > clampedDisplayPoint.x,
+  'display collision prediction sweeps against the moving target segment rather than its stale center');
+const futureImpactNow = Date.now();
+const gradientsBeforeFutureImpact = radialGradientCreations;
+const futureStampedImpact = renderer.draw({ matchId: 'canvas-smoke', snapshotAt: futureImpactNow,
+  ship: { x: .4, y: .5, heading: 0 }, asteroids: [], projectiles: [], collisionEvents: [], navigationEvents: [],
+  weaponEvents: [{ id: 'confirmed_future_clock', matchId: 'canvas-smoke', at: futureImpactNow - 500,
+    impactAt: futureImpactNow + 5000, impactX: .6, impactY: .5, destroyed: true }] }, 100, [], futureImpactNow);
+assert.deepEqual(futureStampedImpact, { background: true, ship: true, asteroidsDrawn: 0 });
+assert.ok(radialGradientCreations > gradientsBeforeFutureImpact,
+  'an authoritative impact starts its visual effect immediately even when client/server wall clocks differ');
+assert.ok(impactArcCenters.length > 0,
+  'the confirmed impact flash is drawn at the authoritative collision coordinates');
 const flight = createFlightState('canvas-smoke', Date.now());
 setFlightInput(flight, 1, 0, 1, Date.now());
 flight.collisionEvents.push({ id: 'impact_1', x: .5, y: .5, at: Date.now(), damage: 9, blocked: false });
@@ -72,6 +99,8 @@ flight.asteroids[0].damageMarks = [{ u: -.18, v: .12, eventId: 'shot_mark_01' }]
 flight.weaponEvents = [{ id: 'shot_visual_01', matchId: 'canvas-smoke', at: renderNow - 80,
   fromX: flight.ship.x, fromY: flight.ship.y, impactX: flight.asteroids[0].x, impactY: flight.asteroids[0].y,
   destroyed: true, damage: 1 }];
+flight.projectiles = [{ id: 'shot_visual_02', x: .55, y: .48, vx: .12, vy: -.03, radius: .008,
+  updatedAt: renderNow, active: true }];
 const authoritativeFlightBeforeDraw = JSON.stringify(flight);
 paintOrder.length = 0;
 renderer.draw(flight, 91, [{ id: 'boost_shields', remainingMs: 2000 }], renderNow);
@@ -91,6 +120,7 @@ assert.equal(canvas.width, 1920, 'canvas backing store accounts for device pixel
 assert.equal(canvas.height, 1080, 'canvas backing store accounts for device pixel ratio');
 assert.equal(transformCalls, 1, 'DPR transform is reset after initial backing-store resize');
 assert.ok(drawOps > 100, 'draws layered background, asteroids, ship and impact effects');
+assert.ok(strokes > 0, 'the authoritative travelling projectile renders a bright bolt and trail');
 assert.ok(strokes > 500, 'the original procedural background renders its coherent tunnel filaments and trails');
 assert.ok(curvedTrails >= 500, 'original moving trails bend through the tunnel');
 assert.equal(renderer.getCacheStats().ambientRays, 112, 'the original procedural background ray field is restored');

@@ -14,6 +14,9 @@ const WORLD = Object.freeze({
   turnSpeed: 2.35,
   maxAsteroids: 8,
   maxEvents: 16,
+  maxProjectiles: 16,
+  projectileSpeed: 0.6,
+  projectileMaxFlightMs: 5000,
   asteroidHealth: 3,
   weaponRange: 0.62,
   eventLifetimeMs: 4200,
@@ -83,6 +86,7 @@ function createFlightState(seed, now = Date.now()) {
     asteroids: [],
     collisionEvents: [],
     weaponEvents: [],
+    projectiles: [],
     navigationEvents: []
   };
 
@@ -182,6 +186,45 @@ function distanceToRelativeSegment(ax, ay, bx, by) {
   return Math.hypot(ax + t * dx, ay + t * dy);
 }
 
+// Earliest normalized time of contact for two circles moving linearly over
+// the same interval. Inputs and result positions use authoritative world
+// coordinates; callers may use the returned fraction for visuals only.
+function sweptCircleImpact(projectileStart, projectileEnd, targetStart, targetEnd, combinedRadius) {
+  const rx = projectileStart.x - targetStart.x;
+  const ry = projectileStart.y - targetStart.y;
+  const dx = (projectileEnd.x - projectileStart.x) - (targetEnd.x - targetStart.x);
+  const dy = (projectileEnd.y - projectileStart.y) - (targetEnd.y - targetStart.y);
+  const c = rx * rx + ry * ry - combinedRadius * combinedRadius;
+  if (c <= 0) return 0;
+  const a = dx * dx + dy * dy;
+  if (a <= 1e-18) return null;
+  const b = 2 * (rx * dx + ry * dy);
+  const discriminant = b * b - 4 * a * c;
+  if (discriminant < 0) return null;
+  const firstContact = (-b - Math.sqrt(discriminant)) / (2 * a);
+  return firstContact >= 0 && firstContact <= 1 ? firstContact : null;
+}
+
+function projectileInterceptSeconds(fromX, fromY, target, speed) {
+  const rx = target.x - fromX;
+  const ry = target.y - fromY;
+  const vx = Number.isFinite(target.vx) ? target.vx : 0;
+  const vy = Number.isFinite(target.vy) ? target.vy : 0;
+  const a = vx * vx + vy * vy - speed * speed;
+  const b = 2 * (rx * vx + ry * vy);
+  const c = rx * rx + ry * ry;
+  if (Math.abs(a) < 1e-12) {
+    const linearRoot = -c / b;
+    return Number.isFinite(linearRoot) && linearRoot > 0 ? linearRoot : null;
+  }
+  const discriminant = b * b - 4 * a * c;
+  if (discriminant < 0) return null;
+  const root = Math.sqrt(discriminant);
+  const candidates = [(-b - root) / (2 * a), (-b + root) / (2 * a)]
+    .filter(value => Number.isFinite(value) && value > 0);
+  return candidates.length ? Math.min(...candidates) : null;
+}
+
 function getThreatRadar(flight, now = Date.now(), matchId = null) {
   const ship = flight?.ship;
   if (!ship) return { ship: null, targets: [], markedThreat: null };
@@ -250,10 +293,12 @@ function advanceFlight(flight, now, options = {}) {
   const steps = Math.max(1, Math.ceil(elapsedMs / WORLD.substepMs));
   const dt = elapsedMs / steps / 1000;
   const newEvents = [];
+  const weaponImpacts = [];
 
   for (let step = 0; step < steps && elapsedMs > 0; step++) {
     const previousShipX = flight.ship.x;
     const previousShipY = flight.ship.y;
+    const asteroidStarts = new Map(flight.asteroids.map(asteroid => [asteroid.id, { x: asteroid.x, y: asteroid.y }]));
     advanceShip(flight.ship, dt);
 
     for (let i = 0; i < flight.asteroids.length; i++) {
@@ -307,6 +352,74 @@ function advanceFlight(flight, now, options = {}) {
         flight.asteroids[i] = makeAsteroid(flight, flight.nextAsteroidId++, 1.04 + asteroid.radius);
       }
     }
+
+    const activeProjectiles = Array.isArray(flight.projectiles) ? flight.projectiles : [];
+    for (let projectileIndex = activeProjectiles.length - 1; projectileIndex >= 0; projectileIndex--) {
+      const projectile = activeProjectiles[projectileIndex];
+      const event = flight.weaponEvents.find(item => item.id === projectile.id);
+      if (!event) { activeProjectiles.splice(projectileIndex, 1); continue; }
+      if (projectile.active === false) continue;
+      const stepStartAt = tickStartedAt + step * dt * 1000;
+      const stepEndAt = stepStartAt + dt * 1000;
+      // A FIRE action can create a projectile at the end of a room tick.
+      // Never simulate it through elapsed time from before its launch.
+      if (projectile.createdAt >= stepEndAt) continue;
+      const projectileStepStartAt = Math.max(stepStartAt, projectile.createdAt);
+      const projectileDt = (stepEndAt - projectileStepStartAt) / 1000;
+      if (projectileDt <= 0) continue;
+      const fromX = projectile.x;
+      const fromY = projectile.y;
+      const nextX = fromX + projectile.vx * projectileDt;
+      const nextY = fromY + projectile.vy * projectileDt;
+      const targetIndex = flight.asteroids.findIndex(asteroid => asteroid.id === projectile.targetAsteroidId);
+      const target = targetIndex >= 0 ? flight.asteroids[targetIndex] : null;
+      let hitT = null;
+      if (target) {
+        const targetStart = asteroidStarts.get(target.id);
+        if (targetStart) {
+          const targetStepStart = {
+            x: targetStart.x + target.vx * ((projectileStepStartAt - stepStartAt) / 1000),
+            y: targetStart.y + target.vy * ((projectileStepStartAt - stepStartAt) / 1000)
+          };
+          hitT = sweptCircleImpact(
+            { x: fromX, y: fromY }, { x: nextX, y: nextY }, targetStepStart,
+            { x: target.x, y: target.y }, projectile.radius + target.radius
+          );
+        }
+      }
+      projectile.x = nextX;
+      projectile.y = nextY;
+      projectile.updatedAt = stepEndAt;
+      if (hitT !== null && target && targetIndex >= 0) {
+        projectile.x = fromX + (nextX - fromX) * hitT;
+        projectile.y = fromY + (nextY - fromY) * hitT;
+        projectile.updatedAt = projectileStepStartAt + hitT * projectileDt * 1000;
+        projectile.active = false;
+        projectile.destroyed = true;
+        event.impactAt = projectile.updatedAt;
+        event.impactX = projectile.x;
+        event.impactY = projectile.y;
+        event.destroyed = true;
+        event.damage = Math.max(1, target.health || target.maxHealth || WORLD.asteroidHealth);
+        event.healthBefore = event.damage;
+        event.healthAfter = 0;
+        const targetId = target.id;
+        flight.asteroids.splice(targetIndex, 1);
+        flight.asteroids.push(makeAsteroid(flight, flight.nextAsteroidId++, 1.04 + target.radius));
+        weaponImpacts.push({ event, asteroidId: targetId, at: event.impactAt });
+      } else {
+        const distance = Math.hypot(projectile.x - projectile.fromX, projectile.y - projectile.fromY);
+        const elapsed = now - projectile.createdAt;
+        if (elapsed >= projectile.maxFlightMs || distance > WORLD.weaponRange + .08 || !target) {
+          projectile.active = false;
+          projectile.destroyed = false;
+          event.missed = true;
+          event.impactAt = projectile.updatedAt;
+          event.impactX = projectile.x;
+          event.impactY = projectile.y;
+        }
+      }
+    }
     if (hullIntegrity <= 0) break;
   }
 
@@ -320,16 +433,20 @@ function advanceFlight(flight, now, options = {}) {
   flight.weaponEvents = (flight.weaponEvents || [])
     .filter(event => now - event.at <= WORLD.eventLifetimeMs)
     .slice(-WORLD.maxEvents);
+  flight.projectiles = (flight.projectiles || [])
+    .filter(projectile => projectile.active || now - projectile.createdAt <= WORLD.eventLifetimeMs)
+    .slice(-WORLD.maxProjectiles);
 
   return {
     hullIntegrity,
     causeOfDeath: hullIntegrity <= 0 && newEvents.length ? 'asteroid_collision' : null,
     consumedPointDefense: Boolean(options.pointDefense) && !pointDefense,
-    newEvents
+    newEvents,
+    weaponImpacts
   };
 }
 
-function resolvePulseCannonHit(flight, asteroidId, now, matchId) {
+function launchPulseCannonProjectile(flight, asteroidId, shooterId, now, matchId) {
   const asteroidIndex = flight.asteroids.findIndex(item => item.id === asteroidId);
   if (asteroidIndex < 0) return { error: 'That asteroid is no longer in this match.' };
   const asteroid = flight.asteroids[asteroidIndex];
@@ -338,50 +455,47 @@ function resolvePulseCannonHit(flight, asteroidId, now, matchId) {
   const distance = Math.hypot(dx, dy);
   if (distance > WORLD.weaponRange) return { error: 'That asteroid is outside pulse-cannon range.' };
 
+  if ((flight.projectiles || []).filter(projectile => projectile.active).length >= WORLD.maxProjectiles) return { error: 'Pulse cannon is recharging.' };
   flight.weaponSeq = (flight.weaponSeq || 0) + 1;
-  asteroid.maxHealth = Number.isFinite(asteroid.maxHealth) ? asteroid.maxHealth : WORLD.asteroidHealth;
-  asteroid.health = Number.isFinite(asteroid.health) ? asteroid.health : asteroid.maxHealth;
-  asteroid.damageMarks = Array.isArray(asteroid.damageMarks) ? asteroid.damageMarks : [];
-  const healthBefore = Math.max(1, asteroid.health);
-  const healthAfter = 0;
-  const destroyed = true;
-  const impactX = asteroid.x - (dx / Math.max(distance, 1e-6)) * asteroid.radius;
-  const impactY = asteroid.y - (dy / Math.max(distance, 1e-6)) * asteroid.radius;
+  const id = `shot_${flight.weaponSeq}`;
+  const muzzleDistance = (flight.ship.radius || WORLD.shipRadius) * 1.15;
+  const fromX = flight.ship.x + Math.cos(flight.ship.heading) * muzzleDistance;
+  const fromY = flight.ship.y + Math.sin(flight.ship.heading) * muzzleDistance;
+  const interceptSeconds = projectileInterceptSeconds(fromX, fromY, asteroid, WORLD.projectileSpeed);
+  const durationMs = Math.min(WORLD.projectileMaxFlightMs,
+    Math.max(1, (interceptSeconds || distance / WORLD.projectileSpeed) * 1000));
+  const aimX = asteroid.x + asteroid.vx * durationMs / 1000;
+  const aimY = asteroid.y + asteroid.vy * durationMs / 1000;
+  const vx = (aimX - fromX) / (durationMs / 1000);
+  const vy = (aimY - fromY) / (durationMs / 1000);
+  const speed = Math.hypot(vx, vy);
+  if (!Number.isFinite(speed) || speed < .01) return { error: 'Could not establish a valid firing solution.' };
+  asteroid.health = Number.isFinite(asteroid.health) ? asteroid.health : WORLD.asteroidHealth;
   const event = {
-    id: `shot_${flight.weaponSeq}`,
+    id,
     matchId: matchId || flight.matchId || null,
     at: now,
     asteroidId,
-    fromX: flight.ship.x,
-    fromY: flight.ship.y,
-    impactX,
-    impactY,
-    damage: healthBefore,
-    healthBefore,
-    maxHealth: asteroid.maxHealth,
-    healthAfter,
-    destroyed
+    shooterId,
+    fromX,
+    fromY,
+    impactX: aimX,
+    impactY: aimY,
+    durationMs,
+    damage: 0,
+    healthBefore: asteroid.health,
+    maxHealth: asteroid.maxHealth || WORLD.asteroidHealth,
+    healthAfter: asteroid.health,
+    destroyed: false
   };
-  asteroid.health = healthAfter;
-  const offsetX = impactX - asteroid.x;
-  const offsetY = impactY - asteroid.y;
-  const cosine = Math.cos(asteroid.rotation || 0);
-  const sine = Math.sin(asteroid.rotation || 0);
-  asteroid.damageMarks.push({
-    u: (offsetX * cosine + offsetY * sine) / asteroid.radius,
-    v: (-offsetX * sine + offsetY * cosine) / asteroid.radius,
-    eventId: event.id,
-    at: now
-  });
-  asteroid.damageMarks = asteroid.damageMarks.slice(-4);
-  if (destroyed) {
-    flight.asteroids.splice(asteroidIndex, 1);
-    flight.asteroids.push(makeAsteroid(flight, flight.nextAsteroidId++, 1.04 + asteroid.radius));
-  }
   flight.weaponEvents = Array.isArray(flight.weaponEvents) ? flight.weaponEvents : [];
   flight.weaponEvents.push(event);
   flight.weaponEvents = flight.weaponEvents.slice(-WORLD.maxEvents);
-  return { event, destroyed, asteroidId };
+  flight.projectiles = Array.isArray(flight.projectiles) ? flight.projectiles : [];
+  flight.projectiles.push({ id, shooterId, targetAsteroidId: asteroidId, fromX, fromY, x: fromX, y: fromY,
+    vx, vy, speed, radius: .008, createdAt: now, updatedAt: now, maxFlightMs: durationMs + 1000,
+    active: true, destroyed: false });
+  return { event, projectile: flight.projectiles.at(-1), destroyed: false, asteroidId };
 }
 
 function clamp(value, min, max) {
@@ -390,6 +504,7 @@ function clamp(value, min, max) {
 
 const api = {
   WORLD,
+  sweptCircleImpact,
   createFlightState,
   normalizeInput,
   setFlightInput,
@@ -399,7 +514,7 @@ const api = {
   armAsteroidHazard,
   divertAsteroidHazard,
   getThreatRadar,
-  resolvePulseCannonHit,
+  launchPulseCannonProjectile,
   advanceFlight
 };
 if (root) root.Spaceflight = api;

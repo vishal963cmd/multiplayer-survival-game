@@ -134,6 +134,13 @@ window.SpaceRenderer = (function() {
       for (const event of Array.isArray(flight.navigationEvents) ? flight.navigationEvents : []) {
         if (!event.matchId || event.matchId === flight?.matchId) drawImpact(ctx, { ...event, blocked: true }, width, height, unit, now);
       }
+      for (const projectile of Array.isArray(flight.projectiles) ? flight.projectiles : []) {
+        if (!projectile || projectile.active === false || ![projectile.x, projectile.y, projectile.vx, projectile.vy].every(Number.isFinite)) continue;
+        const projectileAge = Math.min(1.6, Math.max(0, (now - (Number.isFinite(projectile.updatedAt) ? projectile.updatedAt : flight.snapshotAt || now)) / 1000));
+        const target = asteroids.find(asteroid => asteroid.id === projectile.targetAsteroidId);
+        const point = predictProjectileDisplayPoint(projectile, target, projectileAge);
+        drawPulseProjectile(ctx, projectile, point.x, point.y, width, height, unit);
+      }
       for (const event of Array.isArray(flight.weaponEvents) ? flight.weaponEvents : []) {
         if (!event.matchId || event.matchId === flight?.matchId) drawPulseShot(ctx, event, width, height, unit, now);
       }
@@ -479,22 +486,53 @@ window.SpaceRenderer = (function() {
     const age = Math.max(0, now - event.at);
     if (age > 3200) return;
     const fromX = event.fromX * width; const fromY = event.fromY * height;
-    const hitX = event.impactX * width; const hitY = event.impactY * height;
-    const travel = clamp(age / 165, 0, 1);
     if (age < 180) {
-      const x = fromX + (hitX - fromX) * travel;
-      const y = fromY + (hitY - fromY) * travel;
       ctx.save(); ctx.globalCompositeOperation = 'screen';
-      ctx.strokeStyle = 'rgba(110,224,255,.48)'; ctx.lineWidth = Math.max(2, unit * .006);
-      ctx.beginPath(); ctx.moveTo(fromX, fromY); ctx.lineTo(x, y); ctx.stroke();
       ctx.fillStyle = '#effcff'; ctx.shadowColor = '#4ccaff'; ctx.shadowBlur = unit * .035;
-      ctx.beginPath(); ctx.arc(x, y, Math.max(2, unit * .009), 0, Math.PI * 2); ctx.fill();
       const muzzle = ctx.createRadialGradient(fromX, fromY, 0, fromX, fromY, unit * (.015 + age / 180 * .018));
       muzzle.addColorStop(0, 'rgba(255,255,255,.94)'); muzzle.addColorStop(.3, 'rgba(107,226,255,.72)'); muzzle.addColorStop(1, 'rgba(55,157,230,0)');
       ctx.fillStyle = muzzle; ctx.beginPath(); ctx.arc(fromX, fromY, unit * (.015 + age / 180 * .018), 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     }
-    if (age >= 120) drawWeaponBurst(ctx, event, hitX, hitY, unit, age - 120);
+    if (event.destroyed && Number.isFinite(event.impactAt)) {
+      // The authoritative event itself confirms impact. Do not gate its first
+      // frame on comparing client and server wall clocks, which may be skewed.
+      drawWeaponBurst(ctx, event, event.impactX * width, event.impactY * height, unit, Math.max(0, now - event.impactAt));
+    }
+  }
+
+  function drawPulseProjectile(ctx, projectile, worldX, worldY, width, height, unit) {
+    const x = worldX * width;
+    const y = worldY * height;
+    const speed = Math.max(.0001, Math.hypot(projectile.vx, projectile.vy));
+    const trailLength = unit * .05;
+    const tailX = x - projectile.vx / speed * trailLength;
+    const tailY = y - projectile.vy / speed * trailLength;
+    ctx.save(); ctx.globalCompositeOperation = 'screen';
+    ctx.strokeStyle = 'rgba(111,230,255,.94)'; ctx.lineWidth = Math.max(2.2, unit * .007);
+    ctx.shadowColor = '#42caff'; ctx.shadowBlur = unit * .035;
+    ctx.beginPath(); ctx.moveTo(tailX, tailY); ctx.lineTo(x, y); ctx.stroke();
+    ctx.fillStyle = '#f1fdff'; ctx.shadowBlur = unit * .035;
+    ctx.beginPath(); ctx.arc(x, y, Math.max(2, unit * .008), 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function predictProjectileDisplayPoint(projectile, target, seconds) {
+    const start = { x: projectile.x, y: projectile.y };
+    const end = { x: projectile.x + projectile.vx * seconds, y: projectile.y + projectile.vy * seconds };
+    if (!target || !window.Spaceflight?.sweptCircleImpact) return end;
+    const targetStart = { x: target.x, y: target.y };
+    const targetEnd = {
+      x: target.x + (Number.isFinite(target.vx) ? target.vx : 0) * seconds,
+      y: target.y + (Number.isFinite(target.vy) ? target.vy : 0) * seconds
+    };
+    const contact = window.Spaceflight.sweptCircleImpact(
+      start, end, targetStart, targetEnd, projectile.radius + target.radius
+    );
+    return contact === null ? end : {
+      x: start.x + (end.x - start.x) * contact,
+      y: start.y + (end.y - start.y) * contact
+    };
   }
 
   function drawWeaponBurst(ctx, event, x, y, unit, age) {
@@ -547,5 +585,5 @@ window.SpaceRenderer = (function() {
   function hashEvent(value) { let h = 0; for (const char of String(value)) h = Math.imul(h ^ char.charCodeAt(0), 16777619); return h >>> 0; }
   function clamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
   function wrap(value, size) { return ((value % size) + size) % size; }
-  return { create };
+  return { create, predictProjectileDisplayPoint };
 })();

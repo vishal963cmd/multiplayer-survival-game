@@ -333,3 +333,48 @@ No deployment, commit, push, or production-data change occurred.
 - `npm test`, project-local Netlify build, staged and unstaged diff checks passed.
 
 No deployment, commit, push or reset occurred.
+
+## 2026-10-30 — Phase 29 complete local audit
+
+- Rechecked the current repository and GSD specification/roadmap/state/journal, application source, tests, assets, README, Netlify config and existing working diff.
+- Replaced the live integration test's obsolete three-hit cannon flow with a single accepted shot and exact target-removal/score assertions. Confirmed other original asteroid IDs remain, peer state carries +50, replay cannot duplicate points, cooldown remains active, and a non-Gunner remains denied.
+- Added real-API duplicate nickname join rejection and Navigator mark role/snapshot assertions.
+- Updated README's stale landing description to reflect the actual full-screen muted looping local video and original poster fallback.
+- `npm test` passed: 77 game-rule assertions plus every configured suite. `netlify build` passed and bundled both existing functions. `npm run test:integration -- http://localhost:8888/.netlify/functions/game` passed against the existing Netlify Dev server.
+- Real isolated Chrome/CDP two-client report `test-artifacts/phase17b-2026-10-30T05-59-24-594Z/report.json` passed its recorded responsive landing/gameplay checks, Pilot movement/rotation, one-shot destruction and synchronized score; zero browser errors. Landing captures cover 375/768/1024/1440/1920; gameplay includes 360/390/768/1024/1366/1920/2560.
+- Not verified in this run: full timed mission to results/rematch, every role action in the browser, six simultaneous browser clients, physical mobile hardware/performance, screen-reader audit, or hosted Netlify multi-instance/CAS/rate-limit/cleanup. Deterministic handler tests cover timer/results/rematch; local API covers six-seat capacity and role assignment. The production checks remain blocked because no deployment was authorized.
+
+No deployment, commit, push, reset, or production-data operation occurred.
+
+## 2026-10-30 — Phase 30 server-authoritative Gunner projectile
+
+- Reproduced the reported timing mismatch: API action called `resolvePulseCannonHit`, which immediately set health to zero, removed/replaced the asteroid, and awarded score; the client drew only a 165 ms cosmetic bolt after request acceptance.
+- Replaced immediate hit handling with a launch projectile in the existing flight state. Each room tick advances the projectile and asteroids in bounded substeps and applies relative swept collision to its selected target. A miss/expired/missing target cannot score. Collision emits stable impact time/coordinates and removes the target once; tick-level scoring/contribution changes occur only for returned confirmed impacts.
+- Kept existing Netlify Function, single-room blob mutation, cooldown, rate limits, role/match/target/range validation, action receipt/replay, and snapshot polling. No per-frame Blob writes were added. Redacted shooter session ID from sanitized projectile/event snapshots.
+- Canvas draws a visible projectile head/trail from authoritative coordinates with short bounded extrapolation; launch muzzle flash and confirmed-impact flash/debris are timestamped separately.
+- Added deterministic flight, missed-target, fast-swept-collision, handler idempotency, pre-impact score/state, peer synchronization, and snapshot redaction tests.
+- Focused local Chrome/CDP two-client test passed: real UI selection/FIRE, both clients saw the active projectile while target remained and score was 0, both later saw impact/removal and score 50, time-extrapolated positions agreed within .06 world units, no browser errors. Evidence: `test-artifacts/phase17b-2026-10-30T06-28-27-443Z/`.
+- Live local API integration passed the same before/after state transition. Full `npm test` and configured Netlify build passed; 42 JavaScript syntax checks and staged/unstaged diff checks passed.
+- A broader browser matrix run's final viewport aggregate failed because its test-mode round ended during reverse viewport capture; the report still confirms the earlier projectile/impact flags, but is not a full-matrix pass. Hosted Netlify verification was not performed.
+
+No deployment, commit, push, reset, or production-data operation occurred.
+
+## 2026-10-30 — Phase 31 first-contact Pulse Cannon
+
+- Reproduced the reported timing issue in the legacy display calculation: it used closest approach on a projectile segment rather than first circle contact, then extrapolated an active bolt without stopping at the target. Increased speed from 0.24 to a single configurable 0.6 world units/second.
+- Added a relative swept-circle quadratic returning the earliest contact fraction. Each server substep compares projectile and asteroid start/end positions over the same interval; on contact it stores the projectile center at first contact, marks one authoritative impact and removes only that target. `tickGameState` remains the sole source of +50 and contribution updates.
+- Renderer uses that same swept-circle helper for bounded projectile extrapolation; regression asserts a long extrapolation stops at the combined-radius surface and tracks a moving target.
+- `npm test`, `netlify build`, live local API integration and JS syntax checks passed. `git diff --check` passed.
+- Two independent local Chrome clients selected distant (56% range) and near (13% range) targets. Both impacts destroyed only the target and synchronized the same event ID, timestamp, coordinates and score increase. The shooter action snapshot showed a live projectile and unchanged target/score before impact; zero browser errors. Evidence/screenshots: `test-artifacts/phase17b-2026-10-30T16-12-11-109Z/`.
+- No production deploy, commit, push, or production data change was made. Hosted multi-instance behavior remains unverified.
+
+## 2026-10-30 — Phase 32 immediate collision presentation
+
+- Trace confirmed destruction is performed in the same authoritative `advanceFlight` call that detects first swept-circle contact; `tickGameState` increments score exactly once from that returned impact before the room write. No second server tick is required.
+- Fixed a FIRE-request ordering edge: a shot created just before the room's catch-up tick could be advanced across time preceding `createdAt`. Projectile simulation now begins only at launch; moving-target collision uses the same actual projectile/asteroid interval.
+- Removed the client-clock gate from authoritative impact animation; confirmed destruction begins rendering as soon as the event is applied. `App.onStateUpdate` invokes `UI.renderGame` synchronously and the active canvas draws on its next RAF; existing monotonic snapshot logic rejects stale target state.
+- Reduced active-room polling cadence to 250 ms and to 80 ms with an active projectile, retaining 1.5 s lobby polling. Regression test covers cadence selection. This increases Netlify Blobs read/write frequency during live play.
+- Two real local Chrome clients verified the distant and near Gunner shots. Distant collision at 1793377286820.15; host state receipt/render at 1793377286898/1793377286911; guest at 1793377286919/1793377286929. Render happened 13 ms/10 ms after each event receipt, same event ID and impact point, removal and score. Zero browser errors. Evidence: `test-artifacts/phase17b-2026-10-30T16-21-21-332Z/`.
+- Final checks: `npm test` passed all configured suites (including the new poller regression); `netlify build` passed and bundled both functions; local API integration passed; `node --check` passed for 43 JavaScript files; staged and unstaged `git diff --check` passed.
+
+No deploy, commit, push, reset or production data change occurred.

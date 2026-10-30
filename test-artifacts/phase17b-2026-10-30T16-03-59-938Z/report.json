@@ -1,0 +1,125 @@
+{
+  "baseUrl": "http://localhost:8888",
+  "startedAt": "2026-10-30T16:03:59.953Z",
+  "browser": "isolated headless Chrome via CDP",
+  "server": "existing local Netlify Dev; no server process started by this script",
+  "room": {
+    "createdThroughLandingUi": true,
+    "roomCode": "HCCUKH"
+  },
+  "clients": {
+    "host": {
+      "nickname": "CDP Pilot",
+      "role": []
+    },
+    "guest": {
+      "nickname": "CDP Gunner",
+      "role": []
+    }
+  },
+  "input": {},
+  "gunner": {
+    "selectedThroughUi": true,
+    "targetId": "rock_4",
+    "targetLabel": "TARGET 05 · RANGE 60%",
+    "projectileVisibleBeforeImpact": true,
+    "projectileFlight": {
+      "host": {
+        "active": false,
+        "displayedX": null,
+        "displayedY": null,
+        "targetStillPresent": false,
+        "asteroidIds": [
+          "rock_0",
+          "rock_1",
+          "rock_2",
+          "rock_3",
+          "rock_5",
+          "rock_6",
+          "rock_7",
+          "rock_8"
+        ],
+        "score": 50,
+        "eventState": {
+          "destroyed": true,
+          "impactAt": 1793376245288.403,
+          "impactX": 0.90110033747318,
+          "impactY": 0.44985772467452795,
+          "fromX": 0.43,
+          "fromY": 0.4763
+        }
+      },
+      "guest": {
+        "active": false,
+        "displayedX": null,
+        "displayedY": null,
+        "targetStillPresent": false,
+        "asteroidIds": [
+          "rock_0",
+          "rock_1",
+          "rock_2",
+          "rock_3",
+          "rock_5",
+          "rock_6",
+          "rock_7",
+          "rock_8"
+        ],
+        "score": 50,
+        "eventState": {
+          "destroyed": true,
+          "impactAt": 1793376245288.403,
+          "impactX": 0.90110033747318,
+          "impactY": 0.44985772467452795,
+          "fromX": 0.43,
+          "fromY": 0.4763
+        }
+      }
+    },
+    "projectileScreenshot": "gunner-projectile-flight.png",
+    "healthBefore": 3,
+    "healthAfterObservedByHost": null,
+    "authoritativeDamageObserved": true,
+    "destroyedOnBothClients": true,
+    "scoreBeforeShot": 0,
+    "scoreAfterShot": 50,
+    "guestScoreAfterShot": 50,
+    "scoreSynchronized": true,
+    "otherOriginalAsteroidsRemain": true,
+    "destructionEvent": true,
+    "impact": {
+      "x": 0.90110033747318,
+      "y": 0.44985772467452795
+    },
+    "effectScreenshot": "gunner-one-shot-destruction.png"
+  },
+  "viewports": [],
+  "errors": [
+    {
+      "type": "console",
+      "text": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+      "url": "http://localhost:8888/.netlify/functions/game"
+    }
+  ],
+  "artifactDir": "C:\\Users\\visha\\OneDrive\\Desktop\\Survive Together\\test-artifacts\\phase17b-2026-10-30T16-03-59-938Z",
+  "background": {
+    "procedural": true,
+    "noMediaBackground": true,
+    "media": [],
+    "width": 373,
+    "height": 317,
+    "cssWidth": 373.390625,
+    "cssHeight": 317.3125,
+    "canvasAlpha": 255,
+    "canvasPixel": [
+      9,
+      10,
+      11
+    ],
+    "canvasStyle": {
+      "zIndex": "1",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "coversScene": true
+  },
+  "finishedAt": "2026-10-30T16:04:17.532Z"
+}

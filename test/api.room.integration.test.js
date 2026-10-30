@@ -65,6 +65,13 @@ async function main() {
   const restoredState = await getState(created.data.roomCode, created.data.playerId);
   assert.equal(restoredState.status, 200);
   assert.equal(restoredState.data.room.players.length, 2);
+  const duplicateJoin = await post('join_room', {
+    roomCode: created.data.roomCode,
+    nickname: 'IntegrationGuest'
+  });
+  assert.equal(duplicateJoin.status, 400, 'a repeated join using an occupied nickname cannot create a duplicate session');
+  assert.equal((await getState(created.data.roomCode, created.data.playerId)).data.room.players.length, 2,
+    'rejected duplicate join leaves room membership unchanged');
 
   const chatMessage = await post('send_chat', {
     roomCode: created.data.roomCode, playerId: created.data.playerId,
@@ -135,6 +142,26 @@ async function main() {
   const guestState = await getState(created.data.roomCode, joined.data.playerId);
   assert.equal(guestState.status, 200);
   assert.equal(guestState.data.room.phase, 'playing');
+
+  const navigatorTarget = guestState.data.room.round.flight.asteroids
+    .map(asteroid => ({ asteroid, distance: Math.hypot(asteroid.x - guestState.data.room.round.flight.ship.x, asteroid.y - guestState.data.room.round.flight.ship.y) }))
+    .filter(item => item.distance <= .48)
+    .sort((a, b) => a.distance - b.distance)[0]?.asteroid;
+  assert.ok(navigatorTarget, 'the real two-player match has a Navigator-visible asteroid');
+  const deniedNavigatorMark = await post('mark_threat', {
+    roomCode: created.data.roomCode, playerId: created.data.playerId,
+    matchId: started.data.room.matchId, actionId: 'integration-mark-denied', asteroidId: navigatorTarget.id
+  });
+  assert.equal(deniedNavigatorMark.status, 403, 'the host Pilot cannot use Navigator threat marking');
+  const marked = await post('mark_threat', {
+    roomCode: created.data.roomCode, playerId: joined.data.playerId,
+    matchId: started.data.room.matchId, actionId: 'integration-mark-0001', asteroidId: navigatorTarget.id
+  });
+  assert.equal(marked.status, 200);
+  assert.equal(marked.data.room.round.flight.markedThreat.asteroidId, navigatorTarget.id);
+  const hostRadar = await getState(created.data.roomCode, created.data.playerId);
+  assert.equal(hostRadar.data.room.round.flight.markedThreat.asteroidId, navigatorTarget.id,
+    'the host receives the Navigator marker through the shared room state');
 
   const course = await post('set_course', {
     roomCode: created.data.roomCode,
@@ -350,10 +377,38 @@ async function main() {
     targetAsteroidId: target.id
   });
   assert.equal(hit.status, 200);
+  assert.equal(hit.data.room.round.flight.asteroids.some(asteroid => asteroid.id === target.id), true,
+    'accepting FIRE keeps the selected asteroid alive while its authoritative projectile is in flight');
+  assert.equal(hit.data.room.round.flight.projectiles.length, 1);
+  assert.equal(hit.data.room.round.score, 0, 'live score is unchanged before projectile collision');
+  const cooldownResponse = await post('player_action', {
+    roomCode: capacityRoom.data.roomCode, playerId: gunnerId,
+    matchId: sixStart.data.room.matchId, actionId: 'six-gunner-shot-0002',
+    abilityId: 'pulse_cannon', targetAsteroidId: target.id
+  });
+  assert.equal(cooldownResponse.status, 400, 'the accepted shot still enforces the authoritative cooldown');
+  assert.match(cooldownResponse.data.error, /cooldown/i);
   const observerIndex = (gunnerIndex + 1) % sixSessionIds.length;
-  const observer = await getState(capacityRoom.data.roomCode, sixSessionIds[observerIndex]);
-  const observedTarget = observer.data.room.round.flight.asteroids.find(asteroid => asteroid.id === target.id);
-  assert.equal(observedTarget.health, target.health - 1, 'another live session sees the same authoritative asteroid damage');
+  let observer = await getState(capacityRoom.data.roomCode, sixSessionIds[observerIndex]);
+  assert.ok(observer.data.room.round.flight.projectiles.some(projectile => projectile.id === hit.data.room.round.flight.projectiles[0].id),
+    'another live session receives the same authoritative projectile/impact record');
+  const impactDeadline = Date.now() + 7000;
+  while (observer.data.room.round.flight.asteroids.some(asteroid => asteroid.id === target.id) && Date.now() < impactDeadline) {
+    await new Promise(resolve => setTimeout(resolve, 250));
+    observer = await getState(capacityRoom.data.roomCode, sixSessionIds[observerIndex]);
+  }
+  const observedRound = observer.data.room.round;
+  assert.equal(observedRound.flight.asteroids.some(asteroid => asteroid.id === target.id), false,
+    'the live server removes the selected target after projectile collision');
+  assert.equal(observedRound.flight.projectiles.length, 1, 'the impact projectile record is shared with room observers');
+  assert.equal(observedRound.flight.projectiles[0].active, false);
+  assert.equal(observedRound.flight.projectiles[0].destroyed, true);
+  assert.equal(observedRound.score, 50, 'the live match awards exactly 50 points for one destruction');
+  for (const originalAsteroid of gunnerState.round.flight.asteroids.filter(asteroid => asteroid.id !== target.id)) {
+    const unchanged = observedRound.flight.asteroids.find(asteroid => asteroid.id === originalAsteroid.id);
+    assert.ok(unchanged, `one shot leaves other asteroid ${originalAsteroid.id} in the shared field`);
+    assert.equal(unchanged.health, originalAsteroid.health, `one shot does not damage other asteroid ${originalAsteroid.id}`);
+  }
   assert.equal((await post('player_action', {
     roomCode: capacityRoom.data.roomCode,
     playerId: gunnerId,
@@ -362,36 +417,8 @@ async function main() {
     abilityId: 'pulse_cannon',
     targetAsteroidId: target.id
   })).data.duplicate, true, 'replaying the same live request does not apply another hit');
-  const destroyResponse = await post('player_action', {
-    roomCode: capacityRoom.data.roomCode, playerId: gunnerId,
-    matchId: sixStart.data.room.matchId, actionId: 'six-gunner-shot-0002',
-    abilityId: 'pulse_cannon', targetAsteroidId: target.id
-  });
-  assert.equal(destroyResponse.status, 400, 'the live cannon cooldown rejects an immediate second shot');
-  await new Promise(resolve => setTimeout(resolve, 2200));
-  const secondHit = await post('player_action', {
-    roomCode: capacityRoom.data.roomCode, playerId: gunnerId,
-    matchId: sixStart.data.room.matchId, actionId: 'six-gunner-shot-0002',
-    abilityId: 'pulse_cannon', targetAsteroidId: target.id
-  });
-  assert.equal(secondHit.status, 200);
-  await new Promise(resolve => setTimeout(resolve, 2200));
-  const thirdHit = await post('player_action', {
-    roomCode: capacityRoom.data.roomCode, playerId: gunnerId,
-    matchId: sixStart.data.room.matchId, actionId: 'six-gunner-shot-0003',
-    abilityId: 'pulse_cannon', targetAsteroidId: target.id
-  });
-  assert.equal(thirdHit.status, 200);
-  const afterDestruction = await getState(capacityRoom.data.roomCode, sixSessionIds[observerIndex]);
-  assert.equal(afterDestruction.data.room.round.flight.asteroids.some(asteroid => asteroid.id === target.id), false,
-    'another live client sees the destroyed asteroid removed');
-  assert.equal(afterDestruction.data.room.round.score, 50, 'the live match awards the destruction score exactly once');
-  assert.equal((await post('player_action', {
-    roomCode: capacityRoom.data.roomCode, playerId: gunnerId,
-    matchId: sixStart.data.room.matchId, actionId: 'six-gunner-shot-0003',
-    abilityId: 'pulse_cannon', targetAsteroidId: target.id
-  })).data.duplicate, true, 'replaying the destruction request does not duplicate its score');
-  assert.equal((await getState(capacityRoom.data.roomCode, sixSessionIds[observerIndex])).data.room.round.score, 50);
+  assert.equal((await getState(capacityRoom.data.roomCode, sixSessionIds[observerIndex])).data.room.round.score, 50,
+    'replaying the accepted shot does not award score twice');
   const unauthorizedShot = await post('player_action', {
     roomCode: capacityRoom.data.roomCode,
     playerId: sixSessionIds[0],
@@ -402,7 +429,7 @@ async function main() {
   });
   assert.equal(unauthorizedShot.status, 403);
 
-  console.log('Real API integration passed: room lifecycle, readiness, two-way room chat/order/rate/isolation, host-controlled shared flight, six sessions/roles, Gunner cooldown/replay/damage/destruction/one-time score synchronization, seventh-player rejection, and concurrent capacity.');
+  console.log('Real API integration passed: room lifecycle, duplicate-join protection, readiness, two-way room chat/order/rate/isolation, host flight authority, Navigator threat marking, six sessions/roles, Gunner cooldown/replay/one-shot destruction/one-time score synchronization, seventh-player rejection, and concurrent capacity.');
 }
 
 main().catch(error => {

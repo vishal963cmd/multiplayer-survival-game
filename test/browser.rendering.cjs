@@ -72,11 +72,11 @@ class DevTools {
 }
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-async function waitFor(devtools, sessionId, expression, timeout = 20000) {
+async function waitFor(devtools, sessionId, expression, timeout = 20000, pollInterval = 200) {
   const until = Date.now() + timeout;
   while (Date.now() < until) {
     if (await devtools.evaluate(sessionId, expression)) return;
-    await sleep(200);
+    await sleep(pollInterval);
   }
   throw new Error(`Timed out waiting for browser condition: ${expression}`);
 }
@@ -177,8 +177,35 @@ async function main() {
         coversScene:Math.abs(c.width-scene.clientWidth)<1&&Math.abs(c.height-scene.clientHeight)<1};
     })()`);
 
+    for (const client of ['host', 'guest']) {
+      await devtools.evaluate(pages[client].sessionId, `(() => {
+        window.__pulseTiming = {};
+        const previousUpdate = window.App.onStateUpdate.bind(window.App);
+        window.App.onStateUpdate = room => {
+          const event = room?.round?.flight?.weaponEvents?.findLast(item => item.destroyed);
+          const targetGone = event && !room.round.flight.asteroids.some(item => item.id === event.asteroidId);
+          if (targetGone) window.__pulseTiming.eventReceivedAt = Date.now();
+          const result = previousUpdate(room);
+          if (targetGone) window.__pulseTiming.stateAppliedAt = Date.now();
+          return result;
+        };
+        const requestFrame = window.requestAnimationFrame.bind(window);
+        window.requestAnimationFrame = callback => requestFrame(timestamp => {
+          callback(timestamp);
+          const room = window.App.state.room;
+          const event = room?.round?.flight?.weaponEvents?.findLast(item => item.destroyed);
+          if (event && !room.round.flight.asteroids.some(item => item.id === event.asteroidId)) {
+            window.__pulseTiming.canvasRenderedAt ??= Date.now();
+            window.__pulseTiming.renderedEventId = event.id;
+            window.__pulseTiming.impactAt = event.impactAt;
+          }
+        });
+      })()`);
+    }
+
     const targetBefore = await devtools.evaluate(pages.guest.sessionId, `(() => {
-      const button = document.querySelector('#gunner-target-list .gunner-target');
+      const buttons = [...document.querySelectorAll('#gunner-target-list .gunner-target')];
+      const button = buttons.at(-1);
       if (!button) return null; button.click();
       const target=window.App.state.room.round.flight.asteroids.find(item=>item.id===window.GunnerConsole.getSelectedTarget());
       return { id: window.GunnerConsole.getSelectedTarget(), text: button.textContent, x:target?.x, y:target?.y,
@@ -188,42 +215,180 @@ async function main() {
     const healthBefore = await devtools.evaluate(pages.guest.sessionId,
       `window.App.state.room.round.flight.asteroids.find(item => item.id === ${JSON.stringify(targetBefore.id)})?.health`);
     const scoreBeforeShot = await devtools.evaluate(pages.host.sessionId, `window.App?.state?.room?.round?.score ?? 0`);
+    await devtools.evaluate(pages.guest.sessionId, `(() => {
+      const original = window.App.onUseAbility.bind(window.App);
+      window.App.onUseAbility = (...args) => original(...args).finally(() => {
+        const room = window.App.state.room;
+        const flight = room.round.flight;
+        const projectile = flight.projectiles?.find(item=>item.targetAsteroidId===${JSON.stringify(targetBefore.id)});
+        window.__pulseActionSnapshot = { capturedAt:Date.now(), score:room.round.score,
+          targetPresent:flight.asteroids.some(item=>item.id===${JSON.stringify(targetBefore.id)}),
+          projectile:projectile&&{active:projectile.active,x:projectile.x,y:projectile.y,vx:projectile.vx,vy:projectile.vy},
+          event:flight.weaponEvents?.findLast(item=>item.asteroidId===${JSON.stringify(targetBefore.id)}) };
+      });
+    })()`);
     await devtools.evaluate(pages.guest.sessionId, `document.querySelector('#btn-fire-cannon').click()`);
+    await waitFor(devtools, pages.guest.sessionId, `!!window.__pulseActionSnapshot`, 8000, 20);
+    const pulseActionSnapshot = await devtools.evaluate(pages.guest.sessionId, `window.__pulseActionSnapshot`);
+    const projectileShot = await devtools.command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }, pages.guest.sessionId);
+    fs.writeFileSync(path.join(artifactDir, 'gunner-projectile-flight.png'), Buffer.from(projectileShot.data, 'base64'));
+    const targetIdLiteral = JSON.stringify(targetBefore.id);
+    const inFlightExpression = `(() => {
+      const room=window.App.state.room;
+      const projectile=room.round.flight.projectiles?.find(item=>item.targetAsteroidId===${targetIdLiteral}&&item.active);
+      const event=room.round.flight.weaponEvents?.findLast(item=>item.asteroidId===${targetIdLiteral});
+      return (!!projectile || event?.destroyed || event?.missed) &&
+        (event?.destroyed || room.round.flight.asteroids.some(item=>item.id===${targetIdLiteral})) &&
+        (event?.destroyed ? room.round.score===${Number(scoreBeforeShot)}+50 : room.round.score===${Number(scoreBeforeShot)});
+    })()`;
+    await waitFor(devtools, pages.guest.sessionId, inFlightExpression, 8000, 30);
+    await waitFor(devtools, pages.host.sessionId, inFlightExpression, 8000, 30);
+    const projectileFlight = {};
+    for (const client of ['host','guest']) {
+      projectileFlight[client] = await devtools.evaluate(pages[client].sessionId, `(() => {
+        const room=window.App.state.room;
+        const projectile=room.round.flight.projectiles.find(item=>item.targetAsteroidId===${targetIdLiteral}&&item.active);
+        const target=room.round.flight.asteroids.find(item=>item.id===${targetIdLiteral});
+        const event=room.round.flight.weaponEvents.findLast(item=>item.asteroidId===${targetIdLiteral});
+        const elapsed=projectile ? Math.min(1.6,Math.max(0,(Date.now()-projectile.updatedAt)/1000)) : 0;
+        const displayed=projectile ? window.SpaceRenderer.predictProjectileDisplayPoint(projectile,target,elapsed) : null;
+        return { active:!!projectile, x:projectile?.x, y:projectile?.y, updatedAt:projectile?.updatedAt,
+          displayedX:displayed?.x ?? null, displayedY:displayed?.y ?? null,
+          targetStillPresent:room.round.flight.asteroids.some(item=>item.id===${targetIdLiteral}),
+          asteroidIds:room.round.flight.asteroids.map(item=>item.id),
+          score:room.round.score, eventState:event&&{destroyed:event.destroyed,missed:event.missed,impactAt:event.impactAt,
+            impactX:event.impactX,impactY:event.impactY,fromX:event.fromX,fromY:event.fromY} };
+      })()`);
+    }
+    report.gunner = { selectedThroughUi: true, targetBefore, scoreBeforeShot, pulseActionSnapshot, projectileFlight,
+      projectileScreenshot: 'gunner-projectile-flight.png' };
     await waitFor(devtools, pages.guest.sessionId,
-      `window.App.state.room.round.flight.weaponEvents?.some(event=>event.asteroidId===${JSON.stringify(targetBefore.id)}&&event.destroyed)`, 12000);
+      `window.App.state.room.round.flight.weaponEvents?.some(event=>event.asteroidId===${targetIdLiteral}&&(event.destroyed||event.missed))`, 12000);
+    const gunnerOutcome = await devtools.evaluate(pages.guest.sessionId,
+      `window.App.state.room.round.flight.weaponEvents.findLast(event=>event.asteroidId===${targetIdLiteral})`);
+    if (gunnerOutcome?.missed) throw new Error(`Gunner projectile missed its selected target: ${JSON.stringify({ targetBefore, projectileFlight, gunnerOutcome })}`);
     await waitFor(devtools, pages.host.sessionId, `(() => {
-      const rock = window.App.state.room.round.flight.asteroids.find(item => item.id === ${JSON.stringify(targetBefore.id)});
+      const rock = window.App.state.room.round.flight.asteroids.find(item => item.id === ${targetIdLiteral});
       return !rock && window.App.state.room.round.score === ${Number(scoreBeforeShot)} + 50;
     })()`, 12000);
     await waitFor(devtools, pages.guest.sessionId, `(() => {
       const room=window.App.state.room;
-      return !room.round.flight.asteroids.some(item=>item.id===${JSON.stringify(targetBefore.id)}) &&
+      return !room.round.flight.asteroids.some(item=>item.id===${targetIdLiteral}) &&
         room.round.score === ${Number(scoreBeforeShot)} + 50;
     })()`, 12000);
     const hostShotState = await devtools.evaluate(pages.host.sessionId, `(() => ({
       score:window.App.state.room.round.score,
-      targetPresent:window.App.state.room.round.flight.asteroids.some(item=>item.id===${JSON.stringify(targetBefore.id)}),
+      targetPresent:window.App.state.room.round.flight.asteroids.some(item=>item.id===${targetIdLiteral}),
       asteroidIds:window.App.state.room.round.flight.asteroids.map(item=>item.id),
-      event:window.App.state.room.round.flight.weaponEvents.findLast(event=>event.asteroidId===${JSON.stringify(targetBefore.id)})
+      event:window.App.state.room.round.flight.weaponEvents.findLast(event=>event.asteroidId===${targetIdLiteral})
     }))()`);
     const guestShotState = await devtools.evaluate(pages.guest.sessionId, `(() => ({
       score:window.App.state.room.round.score,
-      targetPresent:window.App.state.room.round.flight.asteroids.some(item=>item.id===${JSON.stringify(targetBefore.id)}),
-      event:window.App.state.room.round.flight.weaponEvents.findLast(event=>event.asteroidId===${JSON.stringify(targetBefore.id)})
+      targetPresent:window.App.state.room.round.flight.asteroids.some(item=>item.id===${targetIdLiteral}),
+      event:window.App.state.room.round.flight.weaponEvents.findLast(event=>event.asteroidId===${targetIdLiteral})
     }))()`);
+    const impactTiming = {};
+    for (const client of ['host', 'guest']) impactTiming[client] = await devtools.evaluate(pages[client].sessionId,
+      `window.__pulseTiming`);
     const destructionShot = await devtools.command('Page.captureScreenshot', { format: 'png', captureBeyondViewport: false }, pages.guest.sessionId);
     fs.writeFileSync(path.join(artifactDir, 'gunner-one-shot-destruction.png'), Buffer.from(destructionShot.data, 'base64'));
     report.gunner = { selectedThroughUi: true, targetId: targetBefore.id, targetLabel: targetBefore.text,
+      projectileVisibleBeforeImpact: !!pulseActionSnapshot.projectile?.active &&
+        pulseActionSnapshot.targetPresent && pulseActionSnapshot.score === scoreBeforeShot &&
+        Number.isFinite(pulseActionSnapshot.projectile.vx) && Number.isFinite(pulseActionSnapshot.projectile.vy),
+      projectileFlight, projectileScreenshot: 'gunner-projectile-flight.png',
       healthBefore, healthAfterObservedByHost: hostShotState.targetPresent ? 'present' : null,
       authoritativeDamageObserved: !hostShotState.targetPresent,
       destroyedOnBothClients: !hostShotState.targetPresent && !guestShotState.targetPresent,
       scoreBeforeShot, scoreAfterShot: hostShotState.score, guestScoreAfterShot: guestShotState.score,
       scoreSynchronized: hostShotState.score === scoreBeforeShot + 50 && guestShotState.score === hostShotState.score,
-      otherOriginalAsteroidsRemain: targetBefore.asteroidIds.filter(id=>id!==targetBefore.id).every(id=>hostShotState.asteroidIds.includes(id)),
+      otherOriginalAsteroidsRemain: targetBefore.asteroidIds.filter(id=>id!==targetBefore.id)
+        .every(id=>projectileFlight.host.asteroidIds.includes(id)),
       destructionEvent: !!hostShotState.event?.destroyed && !!guestShotState.event?.destroyed &&
+        hostShotState.event?.id === guestShotState.event?.id &&
+        hostShotState.event?.impactAt === guestShotState.event?.impactAt &&
+        hostShotState.event?.impactX === guestShotState.event?.impactX &&
+        hostShotState.event?.impactY === guestShotState.event?.impactY &&
         Number.isFinite(hostShotState.event.impactX) && Number.isFinite(hostShotState.event.impactY),
       impact:hostShotState.event&&{x:hostShotState.event.impactX,y:hostShotState.event.impactY},
       effectScreenshot:'gunner-one-shot-destruction.png' };
+    report.gunner.impactTiming = { impactAt:hostShotState.event?.impactAt,
+      host:impactTiming.host,guest:impactTiming.guest,
+      identicalEvent:impactTiming.host.renderedEventId===impactTiming.guest.renderedEventId&&
+        impactTiming.host.renderedEventId===hostShotState.event?.id,
+      renderedOnEventUpdate: ['host','guest'].every(client=>Number.isFinite(impactTiming[client].eventReceivedAt)&&
+        Number.isFinite(impactTiming[client].canvasRenderedAt)&&
+        impactTiming[client].canvasRenderedAt-impactTiming[client].eventReceivedAt<=80) };
+    await waitFor(devtools, pages.guest.sessionId,
+      `window.App.state.room.round.myCooldowns?.pulse_cannon === 0`, 10000, 100);
+    const nearTarget = await devtools.evaluate(pages.guest.sessionId, `(() => {
+      const buttons=[...document.querySelectorAll('#gunner-target-list .gunner-target')];
+      const button=buttons[0]; if(!button) return null; button.click();
+      const asteroid=window.App.state.room.round.flight.asteroids.find(item=>item.id===window.GunnerConsole.getSelectedTarget());
+      const ship=window.App.state.room.round.flight.ship;
+      return {id:asteroid?.id,label:button.textContent,distance:Math.hypot(asteroid.x-ship.x,asteroid.y-ship.y)};
+    })()`);
+    assert.ok(nearTarget?.id && nearTarget.id !== targetBefore.id, 'Gunner UI offers a second, closer asteroid target');
+    await devtools.evaluate(pages.guest.sessionId, `(() => {
+      const original=window.App.onUseAbility.bind(window.App);
+      window.App.onUseAbility=(...args)=>original(...args).finally(()=>{
+        const room=window.App.state.room, flight=room.round.flight;
+        const projectile=flight.projectiles?.find(item=>item.targetAsteroidId===${JSON.stringify(nearTarget.id)});
+        window.__nearPulseActionSnapshot={score:room.round.score,
+          targetPresent:flight.asteroids.some(item=>item.id===${JSON.stringify(nearTarget.id)}),
+          projectile:projectile&&{active:projectile.active,x:projectile.x,y:projectile.y,vx:projectile.vx,vy:projectile.vy},
+          event:flight.weaponEvents?.findLast(item=>item.asteroidId===${JSON.stringify(nearTarget.id)})};
+      });
+      window.__nearPulseActionSnapshot=null;
+    })()`);
+    const nearScoreBefore = await devtools.evaluate(pages.guest.sessionId, `window.App.state.room.round.score`);
+    await devtools.evaluate(pages.guest.sessionId, `document.querySelector('#btn-fire-cannon').click()`);
+    await waitFor(devtools, pages.guest.sessionId, `!!window.__nearPulseActionSnapshot`, 8000, 20);
+    const nearPulseAction = await devtools.evaluate(pages.guest.sessionId, `window.__nearPulseActionSnapshot`);
+    const nearTargetLiteral=JSON.stringify(nearTarget.id);
+    await waitFor(devtools, pages.guest.sessionId,
+      `window.App.state.room.round.flight.weaponEvents?.some(event=>event.asteroidId===${nearTargetLiteral}&&(event.destroyed||event.missed))`, 10000, 50);
+    await waitFor(devtools, pages.host.sessionId, `(() => {
+      const room=window.App.state.room;
+      return !room.round.flight.asteroids.some(item=>item.id===${nearTargetLiteral})&&room.round.score===${Number(nearScoreBefore)}+50;
+    })()`, 10000, 50);
+    const nearHost = await devtools.evaluate(pages.host.sessionId, `(() => ({score:window.App.state.room.round.score,
+      present:window.App.state.room.round.flight.asteroids.some(item=>item.id===${nearTargetLiteral}),
+      event:window.App.state.room.round.flight.weaponEvents.findLast(item=>item.asteroidId===${nearTargetLiteral})}))()`);
+    const nearGuest = await devtools.evaluate(pages.guest.sessionId, `(() => ({score:window.App.state.room.round.score,
+      present:window.App.state.room.round.flight.asteroids.some(item=>item.id===${nearTargetLiteral}),
+      event:window.App.state.room.round.flight.weaponEvents.findLast(item=>item.asteroidId===${nearTargetLiteral})}))()`);
+    report.gunner.nearShot = { target:nearTarget, scoreBefore:nearScoreBefore, actionSnapshot:nearPulseAction,
+      hostScore:nearHost.score,guestScore:nearGuest.score,hostTargetPresent:nearHost.present,guestTargetPresent:nearGuest.present,
+      hostEvent:nearHost.event,guestEvent:nearGuest.event,
+      synchronized:!nearHost.present&&!nearGuest.present&&nearHost.score===nearScoreBefore+50&&nearGuest.score===nearHost.score&&
+        nearHost.event?.destroyed&&nearGuest.event?.destroyed&&nearHost.event?.id===nearGuest.event?.id&&
+        nearHost.event?.impactAt===nearGuest.event?.impactAt&&nearHost.event?.impactX===nearGuest.event?.impactX&&
+        nearHost.event?.impactY===nearGuest.event?.impactY};
+    if (process.argv.includes('--projectile-only')) {
+      report.finishedAt = new Date().toISOString();
+      report.browserErrors = browserErrors;
+      report.result = {
+        activeTwoClientMatch: true,
+        gunnerProjectileVisibleBeforeImpact: report.gunner.projectileVisibleBeforeImpact,
+        gunnerOneShotDestructionAndScore: report.gunner.destroyedOnBothClients && report.gunner.scoreSynchronized && report.gunner.destructionEvent,
+        nearAndDistantTargetsDestroyed: report.gunner.nearShot.synchronized,
+        bothClientsRenderOnEventUpdate:report.gunner.impactTiming.renderedOnEventUpdate&&report.gunner.impactTiming.identicalEvent,
+        browserErrors: browserErrors.length
+      };
+      fs.writeFileSync(path.join(artifactDir, 'report.json'), JSON.stringify(report, null, 2));
+      console.log(JSON.stringify({ artifactDir, result: report.result, gunner: report.gunner }, null, 2));
+      assert.ok(report.result.gunnerProjectileVisibleBeforeImpact,
+        'the shooter receives a visible authoritative in-flight projectile before target removal');
+      assert.ok(report.result.gunnerOneShotDestructionAndScore,
+        'impact removes the target and awards +50 to both clients');
+      assert.ok(report.result.nearAndDistantTargetsDestroyed,
+        'near and distant UI-selected targets produce the same confirmed impact and one-time score on both clients');
+      assert.ok(report.result.bothClientsRenderOnEventUpdate,
+        'both clients apply the authoritative destruction and draw its impact within one animation frame of receiving the state update');
+      assert.equal(report.result.browserErrors, 0, 'browser reported no console/page errors');
+      return;
+    }
     const ordered = [...profiles, ...profiles.slice().reverse()];
     for (const viewport of ordered) {
       for (const client of ['host', 'guest']) {
@@ -424,6 +589,7 @@ async function main() {
       pilotRotation: report.input.pilotRotationObservedByGuest ?? null,
       gunnerDamageSynchronized: report.gunner.authoritativeDamageObserved,
       gunnerOneShotDestructionAndScore: report.gunner.destroyedOnBothClients && report.gunner.scoreSynchronized && report.gunner.destructionEvent,
+      gunnerProjectileVisibleBeforeImpact: report.gunner.projectileVisibleBeforeImpact,
       landingFullBleedVideo: report.landing.viewports.every(view => view.videoReady && view.videoPlaying && view.videoMuted && view.videoLooping && view.videoInline &&
         view.framePixels > 0 && view.fullBleedCoversViewport && view.overlayCoversViewport && view.videoStyle.objectFit === 'cover' &&
         view.videoStyle.pointerEvents === 'none' && view.overlayStyle.pointerEvents === 'none' && view.contentAboveVideo &&
@@ -447,6 +613,7 @@ async function main() {
     if (report.result.pilotRotation !== null) assert.ok(report.result.pilotRotation, 'guest observes Pilot rotation');
     assert.ok(report.result.gunnerDamageSynchronized, 'host observes Gunner damage');
     assert.ok(report.result.gunnerOneShotDestructionAndScore, 'one real Gunner shot removes its target and awards +50 on both clients');
+    assert.ok(report.result.gunnerProjectileVisibleBeforeImpact, 'both clients see the authoritative projectile while the target and pre-impact score remain unchanged');
     assert.ok(report.result.landingFullBleedVideo, 'landing video covers all representative viewports with readable, interactive content and no overflow');
     assert.ok(report.result.landingMotionAndReducedMotion, 'landing video advances and pauses for reduced motion');
     assert.ok(report.result.landingAudioAndSkipControls, 'audio and Skip Intro controls remain active');

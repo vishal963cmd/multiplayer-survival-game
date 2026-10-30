@@ -1,0 +1,96 @@
+{
+  "baseUrl": "http://localhost:8888",
+  "startedAt": "2026-10-30T06:24:49.626Z",
+  "browser": "isolated headless Chrome via CDP",
+  "server": "existing local Netlify Dev; no server process started by this script",
+  "room": {
+    "createdThroughLandingUi": true,
+    "roomCode": "BZSRYF"
+  },
+  "clients": {
+    "host": {
+      "nickname": "CDP Pilot",
+      "role": []
+    },
+    "guest": {
+      "nickname": "CDP Gunner",
+      "role": []
+    }
+  },
+  "input": {},
+  "gunner": {
+    "selectedThroughUi": true,
+    "targetId": "rock_0",
+    "targetLabel": "TARGET 01 · RANGE 26%",
+    "projectileVisibleBeforeImpact": true,
+    "projectileFlight": {
+      "host": {
+        "active": true,
+        "x": 0.3993281653258946,
+        "y": 0.49818722008860034,
+        "updatedAt": 1793341500208,
+        "displayedX": 0.3837821669294302,
+        "displayedY": 0.5092807425992608,
+        "targetStillPresent": true,
+        "score": 0
+      },
+      "guest": {
+        "active": true,
+        "x": 0.42516813563353134,
+        "y": 0.4797479867262863,
+        "updatedAt": 1793341499839,
+        "displayedX": 0.3824516535531561,
+        "displayedY": 0.5102301882195426,
+        "targetStillPresent": true,
+        "score": 0
+      }
+    },
+    "projectileScreenshot": "gunner-projectile-flight.png",
+    "healthBefore": 3,
+    "healthAfterObservedByHost": null,
+    "authoritativeDamageObserved": true,
+    "destroyedOnBothClients": true,
+    "scoreBeforeShot": 0,
+    "scoreAfterShot": 50,
+    "guestScoreAfterShot": 50,
+    "scoreSynchronized": true,
+    "otherOriginalAsteroidsRemain": false,
+    "destructionEvent": true,
+    "impact": {
+      "x": 0.23504477686596004,
+      "y": 0.6154187687823384
+    },
+    "effectScreenshot": "gunner-one-shot-destruction.png"
+  },
+  "viewports": [],
+  "errors": [],
+  "artifactDir": "C:\\Users\\visha\\OneDrive\\Desktop\\Survive Together\\test-artifacts\\phase17b-2026-10-30T06-24-49-609Z",
+  "background": {
+    "procedural": true,
+    "noMediaBackground": true,
+    "media": [],
+    "width": 373,
+    "height": 317,
+    "cssWidth": 373.390625,
+    "cssHeight": 317.3125,
+    "canvasAlpha": 255,
+    "canvasPixel": [
+      9,
+      10,
+      11
+    ],
+    "canvasStyle": {
+      "zIndex": "1",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "coversScene": true
+  },
+  "finishedAt": "2026-10-30T06:25:03.725Z",
+  "browserErrors": [],
+  "result": {
+    "activeTwoClientMatch": true,
+    "gunnerProjectileVisibleBeforeImpact": true,
+    "gunnerOneShotDestructionAndScore": true,
+    "browserErrors": 0
+  }
+}

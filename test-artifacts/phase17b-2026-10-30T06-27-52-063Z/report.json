@@ -1,0 +1,116 @@
+{
+  "baseUrl": "http://localhost:8888",
+  "startedAt": "2026-10-30T06:27:52.086Z",
+  "browser": "isolated headless Chrome via CDP",
+  "server": "existing local Netlify Dev; no server process started by this script",
+  "room": {
+    "createdThroughLandingUi": true,
+    "roomCode": "CPKPDB"
+  },
+  "clients": {
+    "host": {
+      "nickname": "CDP Pilot",
+      "role": []
+    },
+    "guest": {
+      "nickname": "CDP Gunner",
+      "role": []
+    }
+  },
+  "input": {},
+  "gunner": {
+    "selectedThroughUi": true,
+    "targetId": "rock_0",
+    "targetLabel": "TARGET 01 · RANGE 32%",
+    "projectileVisibleBeforeImpact": true,
+    "projectileFlight": {
+      "host": {
+        "active": true,
+        "x": 0.4511199224881677,
+        "y": 0.5207270089584317,
+        "updatedAt": 1793341681230,
+        "displayedX": 0.45470015384720514,
+        "displayedY": 0.5282582378609206,
+        "targetStillPresent": true,
+        "asteroidIds": [
+          "rock_0",
+          "rock_1",
+          "rock_2",
+          "rock_3",
+          "rock_4",
+          "rock_5",
+          "rock_6",
+          "rock_7"
+        ],
+        "score": 0
+      },
+      "guest": {
+        "active": true,
+        "x": 0.4525313598508651,
+        "y": 0.5236960511219131,
+        "updatedAt": 1793341681312,
+        "displayedX": 0.45533702192549547,
+        "displayedY": 0.5295979276176136,
+        "targetStillPresent": true,
+        "asteroidIds": [
+          "rock_0",
+          "rock_1",
+          "rock_2",
+          "rock_3",
+          "rock_4",
+          "rock_5",
+          "rock_6",
+          "rock_7"
+        ],
+        "score": 0
+      }
+    },
+    "projectileScreenshot": "gunner-projectile-flight.png",
+    "healthBefore": 3,
+    "healthAfterObservedByHost": null,
+    "authoritativeDamageObserved": true,
+    "destroyedOnBothClients": true,
+    "scoreBeforeShot": 0,
+    "scoreAfterShot": 50,
+    "guestScoreAfterShot": 50,
+    "scoreSynchronized": true,
+    "otherOriginalAsteroidsRemain": true,
+    "destructionEvent": true,
+    "impact": {
+      "x": 0.4600316336098412,
+      "y": 0.5394733215956755
+    },
+    "effectScreenshot": "gunner-one-shot-destruction.png"
+  },
+  "viewports": [],
+  "errors": [],
+  "artifactDir": "C:\\Users\\visha\\OneDrive\\Desktop\\Survive Together\\test-artifacts\\phase17b-2026-10-30T06-27-52-063Z",
+  "background": {
+    "procedural": true,
+    "noMediaBackground": true,
+    "media": [],
+    "width": 373,
+    "height": 317,
+    "cssWidth": 373.390625,
+    "cssHeight": 317.3125,
+    "canvasAlpha": 255,
+    "canvasPixel": [
+      18,
+      19,
+      20
+    ],
+    "canvasStyle": {
+      "zIndex": "1",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "coversScene": true
+  },
+  "finishedAt": "2026-10-30T06:28:03.012Z",
+  "browserErrors": [],
+  "result": {
+    "activeTwoClientMatch": true,
+    "gunnerProjectileVisibleBeforeImpact": true,
+    "gunnerOneShotDestructionAndScore": true,
+    "browserErrors": 0
+  }
+}

@@ -1,0 +1,12 @@
+
+> signal-shift-survive-together@1.0.0 dev
+> netlify dev --port 8888
+
+⬥ Injecting environment variable values for all scopes
+⬥ Ignored general context env var: LANG (defined in process)
+⬥ Ignored general context env var: LC_ALL (defined in process)
+⬥ No app server detected. Using simple static server
+⬥ Ignoring 'targetPort' setting since using a simple static server.
+⬥ Use --staticServerPort or [dev.staticServerPort] to configure the static server port
+⬥ Running static server from "Survive Together"
+⬥ Could not acquire required 'port': '8888'

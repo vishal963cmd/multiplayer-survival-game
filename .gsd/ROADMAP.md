@@ -528,3 +528,61 @@ No deploy, commit, push, reset, or production-data operation occurred.
 - [x] `npm test`, configured local Netlify build, `git diff --check`, and `git diff --cached --check` passed.
 
 No deploy, commit, push, or reset occurred.
+
+## Phase 29 — complete application audit and Gunner one-shot (2026-10-30)
+
+### Completed with local evidence
+- [x] Audit the current source, tests, assets, Netlify configuration, README and GSD records; preserve existing work.
+- [x] Verify/update the Gunner regression expectation: one valid shot removes only its selected asteroid, awards +50 once, synchronizes removal/score, and retains authorization, cooldown and replay protections.
+- [x] Extend local API integration assertions for duplicate join rejection, Navigator mark authorization/shared state, and one-shot Gunner removal/score/untouched asteroids/replay/cooldown.
+- [x] Validate local landing and gameplay rendering in isolated Chrome/CDP at mobile, tablet, laptop, desktop and ultrawide widths; verify two-client Pilot movement and Gunner destruction/score. Evidence/report: `test-artifacts/phase17b-2026-10-30T05-59-24-594Z/`.
+- [x] `npm test`, `netlify build`, and local Netlify Dev API integration passed.
+- [ ] Complete full mission/victory or defeat/results/rematch in an interactive two-client browser run; test every role ability, every Pilot key, and Enter-to-send chat in-browser.
+- [ ] Verify with six simultaneous browser clients (local API capacity tests cover six seats, not six rendered clients).
+- [ ] Run physical-device/mobile performance and assistive-technology/keyboard-only audits.
+- [ ] Verify deployed Netlify Blobs conditional writes across instances, hosted rate limiting, scheduled cleanup and static delivery in an authorized deploy preview.
+
+### Release gate
+
+Local code/build checks pass and the one-shot Gunner path is verified through browser and live local API evidence. Overall status: **not fully locally release-ready** because the complete browser mission/lifecycle and all requested manual interactions remain unverified. Production readiness is **BLOCKED** on hosted infrastructure access/authorization; no deployment or production operation was performed. The exact feature evidence ledger is in the Phase 29 section of `README.md`.
+
+## Phase 30 — authoritative Pulse Cannon projectile timing (2026-10-30)
+
+- [x] Fix the concrete premature-destruction defect: the former FIRE handler removed its target immediately and the visual bolt only animated afterward. FIRE now creates a server-owned projectile; asteroid and score remain unchanged until server-confirmed collision.
+- [x] Simulate projectile position from the source and velocity within the existing authoritative flight ticks, alongside the moving asteroid field. Sweep the projectile's segment relative to the target's segment so fast projectiles cannot skip a collision. Only the selected target is eligible; a missing target or expired/out-of-range projectile becomes a miss.
+- [x] Record stable launch/impact event data. Render the active authoritative projectile as a cyan pulse with a bright head and trail; render the muzzle at launch and debris/impact only at a confirmed impact timestamp. Both clients extrapolate the same timestamped state for display. Public snapshots redact the private shooter session ID.
+- [x] Award +50 and the Gunner destruction contribution only from the tick that confirms collision. Action receipt, role/range/cooldown/rate/replay/room authorization remain on the existing API path.
+- [x] Add physics regressions for alive-at-launch and mid-flight, confirmed impact, miss, selected-target-only destruction, and high-speed swept collision. Add handler assertions for duplicate-launch protection, peer-visible in-flight state, no pre-impact score, impact-only score, and session-ID redaction.
+- [x] Live local HTTP integration passed: another room session observed the moving projectile and living target with score 0 before impact, then target removal and score 50.
+- [x] Focused isolated Chrome/CDP two-client run passed with zero browser errors. Both clients had an active projectile and living target at score 0; timestamp-extrapolated positions were within 0.06 world units. Both later observed impact/removal/+50 and the selected target alone was consumed. Capture/report: `test-artifacts/phase17b-2026-10-30T06-28-27-443Z/`.
+- [x] `npm test`: passed (77 game-rule assertions and all configured suites). `.\node_modules\.bin\netlify.cmd build`: passed and bundled both functions. Syntax checks passed for project JavaScript files. Staged and unstaged diff checks passed.
+- [ ] Full responsive browser matrix in a single active match remains unverified for this run: the existing short local test round ended during the later reverse viewport sweep. A previous broad run also captured projectile travel and impact but failed its later viewport aggregate for the same lifecycle reason; do not treat those aggregate viewport flags as PASS.
+- [ ] Hosted multi-instance storage and production delivery remain outside local verification and were not deployed.
+
+Phase 30 supersedes the Phase 25 immediate-destruction implementation note. The Gunner requirement is now collision-delayed in the authoritative simulation, not just in its rendering.
+
+## Phase 31 — Gunner first-contact timing and faster Pulse Cannon (2026-10-30)
+
+- [x] Increase the configurable projectile speed from 0.24 to 0.6 world units/second (2.5×).
+- [x] Use earliest swept-circle contact against the selected asteroid's same-substep movement and combined projectile/asteroid radii. Stop authoritative projectile position at contact; score/destroy only on confirmed impact.
+- [x] Clamp rendered prediction with the shared collision helper, including a moving-target display regression so delayed snapshots cannot show a bolt beyond contact.
+- [x] Keep launch muzzle/cyan projectile and impact/debris rendering tied to launch/projectile/authoritative collision state.
+- [x] Extend tests for first contact, miss, high-speed tunneling, speed, moving-target render clamp, duplicate/replay score protections and synchronized impact.
+- [x] `npm test`, local Netlify build and live API integration passed.
+- [x] Isolated two-client Chrome verification passed distant (56% range) and near (13% range) UI-selected targets. Shooter received a live projectile before impact; both clients received the same confirmed impact and +50 score. Report: `test-artifacts/phase17b-2026-10-30T16-12-11-109Z/`.
+- [x] Project JavaScript syntax and `git diff --check` passed.
+
+Hosted multi-instance/production behavior remains unverified and no deployment was performed.
+
+## Phase 32 — Instant authoritative impact presentation (2026-10-30)
+
+- [x] Prevent a newly fired projectile from traversing elapsed simulation time before its launch timestamp when the FIRE request also ticks the room.
+- [x] Align the asteroid start coordinate with the projectile's actual simulated start for swept collision; preserve first-contact position and same-update removal/score.
+- [x] Start the impact effect as soon as the authoritative destruction event is applied; don't gate it on client/server wall-clock comparison.
+- [x] Preserve monotonic stale-snapshot rejection; add an asteroid restoration regression.
+- [x] Poll active gameplay at 250 ms and active projectile state at 80 ms, with existing lobby cadence unchanged.
+- [x] Add tests for pre-launch catch-up, single-update collision, immediate render with skewed timestamps, impact coordinate and stale snapshot rejection.
+- [x] Two-client Chrome verified distant/near shots and event synchronization. Distant shot: host rendered 13 ms after event receipt/91 ms after collision; guest rendered 10 ms after receipt/109 ms after collision. Report: `test-artifacts/phase17b-2026-10-30T16-21-21-332Z/`.
+- [x] `npm test`, configured Netlify build, live API integration, syntax checks for 43 JS files and staged/unstaged `git diff --check` all passed after current edits.
+
+No deployment, commit, push, reset or production data operation occurred. Hosted multi-instance behavior remains unverified.

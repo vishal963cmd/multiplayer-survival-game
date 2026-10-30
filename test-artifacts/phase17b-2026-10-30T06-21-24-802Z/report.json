@@ -1,0 +1,14 @@
+{
+  "baseUrl": "--projectile-only",
+  "startedAt": "2026-10-30T06:21:24.817Z",
+  "browser": "isolated headless Chrome via CDP",
+  "server": "existing local Netlify Dev; no server process started by this script",
+  "room": null,
+  "clients": {},
+  "input": {},
+  "gunner": {},
+  "viewports": [],
+  "errors": [],
+  "artifactDir": "C:\\Users\\visha\\OneDrive\\Desktop\\Survive Together\\test-artifacts\\phase17b-2026-10-30T06-21-24-802Z",
+  "finishedAt": "2026-10-30T06:21:25.645Z"
+}

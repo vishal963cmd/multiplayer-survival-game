@@ -458,6 +458,25 @@ function tickGameState(room, now) {
       pointDefense: isBuffActive(round, 'point_defense', now)
     });
     round.hullIntegrity = flightTick.hullIntegrity;
+    for (const hit of flightTick.weaponImpacts || []) {
+      round.score = (round.score || 0) + 50;
+      const shooter = hit.event.shooterId;
+      if (shooter) {
+        const contributions = round.contributions || (round.contributions = {});
+        contributions.gunnerAsteroidsDestroyed = (contributions.gunnerAsteroidsDestroyed || 0) + 1;
+      }
+      const impactAction = {
+        playerId: shooter || null,
+        nickname: room.players.find(player => player.id === shooter)?.nickname || 'Gunner',
+        abilityId: 'pulse_cannon',
+        abilityName: 'Pulse Cannon impact',
+        timestamp: hit.at,
+        eventId: `impact:${round.matchId || room.matchId}:${hit.event.id}`,
+        message: 'Pulse Cannon impact confirmed. Asteroid destroyed. +50 team score.'
+      };
+      round.lastAction = impactAction;
+      recordCrewEvent(round, { ...impactAction, id: impactAction.eventId, type: 'pulse_cannon_impact' });
+    }
     if (flightTick.consumedPointDefense) {
       round.activeBuffs = (round.activeBuffs || []).filter(buff => buff.id !== 'point_defense');
     }

@@ -1,0 +1,225 @@
+{
+  "baseUrl": "http://localhost:8888",
+  "startedAt": "2026-10-30T16:21:21.346Z",
+  "browser": "isolated headless Chrome via CDP",
+  "server": "existing local Netlify Dev; no server process started by this script",
+  "room": {
+    "createdThroughLandingUi": true,
+    "roomCode": "LKJLPA"
+  },
+  "clients": {
+    "host": {
+      "nickname": "CDP Pilot",
+      "role": []
+    },
+    "guest": {
+      "nickname": "CDP Gunner",
+      "role": []
+    }
+  },
+  "input": {},
+  "gunner": {
+    "selectedThroughUi": true,
+    "targetId": "rock_3",
+    "targetLabel": "TARGET 04 · RANGE 57%",
+    "projectileVisibleBeforeImpact": true,
+    "projectileFlight": {
+      "host": {
+        "active": true,
+        "x": 0.5000874101548497,
+        "y": 0.5445099328381569,
+        "updatedAt": 1793377286162,
+        "displayedX": 0.5525454717431422,
+        "displayedY": 0.5955627660053662,
+        "targetStillPresent": true,
+        "asteroidIds": [
+          "rock_0",
+          "rock_1",
+          "rock_2",
+          "rock_3",
+          "rock_4",
+          "rock_5",
+          "rock_6",
+          "rock_7"
+        ],
+        "score": 0,
+        "eventState": {
+          "destroyed": false,
+          "impactX": 0.8088631839196034,
+          "impactY": 0.8450143279072665,
+          "fromX": 0.43,
+          "fromY": 0.4763
+        }
+      },
+      "guest": {
+        "active": true,
+        "x": 0.4626787924648379,
+        "y": 0.5081034042680976,
+        "updatedAt": 1793377286075,
+        "displayedX": 0.5546953923000395,
+        "displayedY": 0.5976550952335304,
+        "targetStillPresent": true,
+        "asteroidIds": [
+          "rock_0",
+          "rock_1",
+          "rock_2",
+          "rock_3",
+          "rock_4",
+          "rock_5",
+          "rock_6",
+          "rock_7"
+        ],
+        "score": 0,
+        "eventState": {
+          "destroyed": false,
+          "impactX": 0.8088631839196034,
+          "impactY": 0.8450143279072665,
+          "fromX": 0.43,
+          "fromY": 0.4763
+        }
+      }
+    },
+    "projectileScreenshot": "gunner-projectile-flight.png",
+    "healthBefore": 3,
+    "healthAfterObservedByHost": null,
+    "authoritativeDamageObserved": true,
+    "destroyedOnBothClients": true,
+    "scoreBeforeShot": 0,
+    "scoreAfterShot": 50,
+    "guestScoreAfterShot": 50,
+    "scoreSynchronized": true,
+    "otherOriginalAsteroidsRemain": true,
+    "destructionEvent": true,
+    "impact": {
+      "x": 0.7830811749721747,
+      "y": 0.8199229585036676
+    },
+    "effectScreenshot": "gunner-one-shot-destruction.png",
+    "impactTiming": {
+      "impactAt": 1793377286820.1497,
+      "host": {
+        "eventReceivedAt": 1793377286898,
+        "stateAppliedAt": 1793377286899,
+        "canvasRenderedAt": 1793377286911,
+        "renderedEventId": "shot_1",
+        "impactAt": 1793377286820.1497
+      },
+      "guest": {
+        "eventReceivedAt": 1793377286919,
+        "stateAppliedAt": 1793377286921,
+        "canvasRenderedAt": 1793377286929,
+        "renderedEventId": "shot_1",
+        "impactAt": 1793377286820.1497
+      },
+      "identicalEvent": true,
+      "renderedOnEventUpdate": true
+    },
+    "nearShot": {
+      "target": {
+        "id": "rock_0",
+        "label": "TARGET 01 · RANGE 13%",
+        "distance": 0.1315323091996564
+      },
+      "scoreBefore": 50,
+      "actionSnapshot": {
+        "score": 50,
+        "targetPresent": true,
+        "projectile": {
+          "active": true,
+          "x": 0.43,
+          "y": 0.4763,
+          "vx": 0.43388531551609294,
+          "vy": -0.41441951327067134
+        },
+        "event": {
+          "id": "shot_2",
+          "matchId": "9ee5b980-5cd9-4832-8d17-1cd966808164",
+          "at": 1793377288216,
+          "asteroidId": "rock_0",
+          "fromX": 0.43,
+          "fromY": 0.4763,
+          "impactX": 0.4897903053373004,
+          "impactY": 0.4191921229871173,
+          "durationMs": 137.80209469910662,
+          "damage": 0,
+          "healthBefore": 3,
+          "maxHealth": 3,
+          "healthAfter": 3,
+          "destroyed": false
+        }
+      },
+      "hostScore": 100,
+      "guestScore": 100,
+      "hostTargetPresent": false,
+      "guestTargetPresent": false,
+      "hostEvent": {
+        "id": "shot_2",
+        "matchId": "9ee5b980-5cd9-4832-8d17-1cd966808164",
+        "at": 1793377288216,
+        "asteroidId": "rock_0",
+        "fromX": 0.43,
+        "fromY": 0.4763,
+        "impactX": 0.4699711474234943,
+        "impactY": 0.4381221155043899,
+        "durationMs": 137.80209469910662,
+        "damage": 3,
+        "healthBefore": 3,
+        "maxHealth": 3,
+        "healthAfter": 0,
+        "destroyed": true,
+        "impactAt": 1793377288308.1238
+      },
+      "guestEvent": {
+        "id": "shot_2",
+        "matchId": "9ee5b980-5cd9-4832-8d17-1cd966808164",
+        "at": 1793377288216,
+        "asteroidId": "rock_0",
+        "fromX": 0.43,
+        "fromY": 0.4763,
+        "impactX": 0.4699711474234943,
+        "impactY": 0.4381221155043899,
+        "durationMs": 137.80209469910662,
+        "damage": 3,
+        "healthBefore": 3,
+        "maxHealth": 3,
+        "healthAfter": 0,
+        "destroyed": true,
+        "impactAt": 1793377288308.1238
+      },
+      "synchronized": true
+    }
+  },
+  "viewports": [],
+  "errors": [],
+  "artifactDir": "C:\\Users\\visha\\OneDrive\\Desktop\\Survive Together\\test-artifacts\\phase17b-2026-10-30T16-21-21-332Z",
+  "background": {
+    "procedural": true,
+    "noMediaBackground": true,
+    "media": [],
+    "width": 373,
+    "height": 317,
+    "cssWidth": 373.390625,
+    "cssHeight": 317.3125,
+    "canvasAlpha": 255,
+    "canvasPixel": [
+      9,
+      10,
+      11
+    ],
+    "canvasStyle": {
+      "zIndex": "1",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "coversScene": true
+  },
+  "finishedAt": "2026-10-30T16:21:28.515Z",
+  "browserErrors": [],
+  "result": {
+    "activeTwoClientMatch": true,
+    "gunnerProjectileVisibleBeforeImpact": true,
+    "gunnerOneShotDestructionAndScore": true,
+    "nearAndDistantTargetsDestroyed": true,
+    "bothClientsRenderOnEventUpdate": true,
+    "browserErrors": 0
+  }
+}

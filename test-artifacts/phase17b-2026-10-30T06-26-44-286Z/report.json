@@ -1,0 +1,109 @@
+{
+  "baseUrl": "http://localhost:8888",
+  "startedAt": "2026-10-30T06:26:44.312Z",
+  "browser": "isolated headless Chrome via CDP",
+  "server": "existing local Netlify Dev; no server process started by this script",
+  "room": {
+    "createdThroughLandingUi": true,
+    "roomCode": "WFAMJS"
+  },
+  "clients": {
+    "host": {
+      "nickname": "CDP Pilot",
+      "role": []
+    },
+    "guest": {
+      "nickname": "CDP Gunner",
+      "role": []
+    }
+  },
+  "input": {},
+  "gunner": {
+    "selectedThroughUi": true,
+    "targetBefore": {
+      "id": "rock_0",
+      "text": "TARGET 01 · RANGE 35%",
+      "x": 0.7779353521376382,
+      "y": 0.5458572123990302,
+      "radius": 0.025390423047821967,
+      "asteroidIds": [
+        "rock_0",
+        "rock_1",
+        "rock_2",
+        "rock_3",
+        "rock_4",
+        "rock_5",
+        "rock_6",
+        "rock_7"
+      ]
+    },
+    "scoreBeforeShot": 0,
+    "projectileFlight": {
+      "host": {
+        "active": true,
+        "x": 0.4071890999026711,
+        "y": 0.5031979450225872,
+        "updatedAt": 1793341610755,
+        "displayedX": 0.40168931882938275,
+        "displayedY": 0.5096831257175347,
+        "targetStillPresent": true,
+        "asteroidIds": [
+          "rock_0",
+          "rock_1",
+          "rock_2",
+          "rock_3",
+          "rock_4",
+          "rock_5",
+          "rock_6",
+          "rock_7"
+        ],
+        "score": 0
+      },
+      "guest": {
+        "active": true,
+        "x": 0.4065599736544352,
+        "y": 0.5039397922607546,
+        "updatedAt": 1793341610786,
+        "displayedX": 0.40140519729792135,
+        "displayedY": 0.5100181535025134,
+        "targetStillPresent": true,
+        "asteroidIds": [
+          "rock_0",
+          "rock_1",
+          "rock_2",
+          "rock_3",
+          "rock_4",
+          "rock_5",
+          "rock_6",
+          "rock_7"
+        ],
+        "score": 0
+      }
+    },
+    "projectileScreenshot": "gunner-projectile-flight.png"
+  },
+  "viewports": [],
+  "errors": [],
+  "artifactDir": "C:\\Users\\visha\\OneDrive\\Desktop\\Survive Together\\test-artifacts\\phase17b-2026-10-30T06-26-44-286Z",
+  "background": {
+    "procedural": true,
+    "noMediaBackground": true,
+    "media": [],
+    "width": 373,
+    "height": 317,
+    "cssWidth": 373.390625,
+    "cssHeight": 317.3125,
+    "canvasAlpha": 255,
+    "canvasPixel": [
+      9,
+      10,
+      11
+    ],
+    "canvasStyle": {
+      "zIndex": "1",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "coversScene": true
+  },
+  "finishedAt": "2026-10-30T06:26:52.432Z"
+}

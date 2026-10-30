@@ -45,7 +45,7 @@ const {
   setActiveMatchExpiry,
   promoteHostIfDisconnected
 } = require('../../shared/roomLifecycle');
-const { setFlightInput, divertAsteroidHazard, getThreatRadar, resolvePulseCannonHit } = require('../../shared/spaceflight');
+const { setFlightInput, divertAsteroidHazard, getThreatRadar, launchPulseCannonProjectile } = require('../../shared/spaceflight');
 
 const STORE_NAME = 'signal-shift-rooms';
 const MAX_RETRIES = 4;
@@ -917,7 +917,6 @@ async function handlePlayerAction(s, body) {
       contributions.navigatorDiversions++;
     } else if (abilityId === 'pulse_cannon' && result.weaponEvent) {
       contributions.gunnerShots++;
-      if (result.destroyed) contributions.gunnerAsteroidsDestroyed++;
     } else if (abilityId === 'allocate_power') {
       contributions.powerAllocations++;
     } else if (abilityId === 'boost_engines') {
@@ -999,12 +998,9 @@ function applyAbility({ abilityId, player, round, now, targetEmergencyId, target
     }
     case 'pulse_cannon': {
       if (!targetAsteroidId) return { error: 'No asteroid target is in pulse-cannon range.' };
-      const shot = resolvePulseCannonHit(round.flight, targetAsteroidId, now, round.matchId);
+      const shot = launchPulseCannonProjectile(round.flight, targetAsteroidId, player.id, now, round.matchId);
       if (shot.error) return shot;
-      const message = shot.destroyed
-        ? `Gunner ${player.nickname} shattered an asteroid. +50 team score.`
-        : `Gunner ${player.nickname} hit an asteroid. Hull ${shot.event.healthAfter}/${shot.event.maxHealth}.`;
-      if (shot.destroyed) round.score = (round.score || 0) + 50;
+      const message = `Gunner ${player.nickname} fired the Pulse Cannon. Projectile in flight.`;
       return { success: true, weaponEvent: shot.event, destroyed: shot.destroyed, message };
     }
     case 'patch_hull': {
@@ -1413,7 +1409,8 @@ function sanitize(room, myPlayerId) {
         markedThreat: threatRadar.markedThreat,
         collisionEvents: (r.flight.collisionEvents || []).map(event => ({ ...event })),
         navigationEvents: (r.flight.navigationEvents || []).map(event => ({ ...event })),
-        weaponEvents: (r.flight.weaponEvents || []).map(event => ({ ...event }))
+        weaponEvents: (r.flight.weaponEvents || []).map(({ shooterId, ...event }) => ({ ...event })),
+        projectiles: (r.flight.projectiles || []).map(({ shooterId, ...projectile }) => ({ ...projectile }))
       } : null,
       myCooldowns
     };

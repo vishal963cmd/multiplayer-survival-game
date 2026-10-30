@@ -7,6 +7,8 @@
 window.Poller = (function() {
 
   const POLL_INTERVAL_MS = 1500;
+  const FLIGHT_POLL_INTERVAL_MS = 250;
+  const PROJECTILE_POLL_INTERVAL_MS = 80;
 
   let timer       = null;
   let roomCode    = null;
@@ -22,7 +24,7 @@ window.Poller = (function() {
     generation++;
     running = true;
     _poll(); // immediate first poll
-    timer = setInterval(_poll, POLL_INTERVAL_MS);
+    _scheduleNextPoll();
   }
 
   function stop() {
@@ -33,6 +35,7 @@ window.Poller = (function() {
 
   async function _poll() {
     if (!running || pollActive || !roomCode || !playerId) return;
+    if (timer) { clearTimeout(timer); timer = null; }
     const pollGeneration = generation;
     const pollRoomCode = roomCode;
     const pollPlayerId = playerId;
@@ -48,15 +51,33 @@ window.Poller = (function() {
       if (running && pollGeneration === generation) App.onPollError(e);
     } finally {
       pollActive = false;
+      _scheduleNextPoll();
     }
+  }
+
+  function _scheduleNextPoll() {
+    if (!running || timer) return;
+    const room = window.App?.state?.room;
+    const inFlight = room?.phase === 'playing' &&
+      Array.isArray(room.round?.flight?.projectiles) &&
+      room.round.flight.projectiles.some(projectile => projectile?.active);
+    const delay = inFlight ? PROJECTILE_POLL_INTERVAL_MS
+      : room?.phase === 'playing' ? FLIGHT_POLL_INTERVAL_MS : POLL_INTERVAL_MS;
+    timer = setTimeout(_poll, delay);
   }
 
   // Force an immediate extra poll (e.g. after an action)
   function poke() {
     if (!running) return;
+    if (timer) { clearTimeout(timer); timer = null; }
     _poll();
   }
 
-  return { start, stop, poke };
+  return { start, stop, poke, getPollIntervalMs(room) {
+    const inFlight = room?.phase === 'playing' &&
+      Array.isArray(room.round?.flight?.projectiles) && room.round.flight.projectiles.some(projectile => projectile?.active);
+    return inFlight ? PROJECTILE_POLL_INTERVAL_MS
+      : room?.phase === 'playing' ? FLIGHT_POLL_INTERVAL_MS : POLL_INTERVAL_MS;
+  } };
 
 })();

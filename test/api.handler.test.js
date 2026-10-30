@@ -427,25 +427,46 @@ async function main() {
     assert.equal(outOfRangeShot.status, 400, 'the server rejects a selected asteroid outside weapon range');
     const shotOne = await call('player_action', cannonPayload);
     assert.equal(shotOne.status, 200);
-    assert.equal(shotOne.data.room.round.flight.asteroids.some(rock => rock.id === 'rock_cannon_target'), false,
-      'one accepted server shot removes the selected asteroid immediately');
-    assert.equal(shotOne.data.room.round.flight.weaponEvents[0].impactX, .57);
-    assert.equal(shotOne.data.room.round.flight.weaponEvents[0].healthBefore, 7);
-    assert.equal(shotOne.data.room.round.flight.weaponEvents[0].healthAfter, 0);
-    assert.equal(shotOne.data.room.round.flight.weaponEvents[0].damage, 7);
-    assert.equal(shotOne.data.room.round.flight.weaponEvents[0].destroyed, true,
-      'the shared shot event identifies a one-shot destruction for synchronized effects');
-    assert.equal(shotOne.data.room.round.score, 50, 'one selected asteroid destruction awards +50 once');
-    assert.deepEqual(shotOne.data.room.round.flight.asteroids.find(rock => rock.id === 'rock_cannon_other'), {
-      id: 'rock_cannon_other', shapeSeed: 84, x: .76, y: .5, vx: 0, vy: 0,
-      radius: .03, rotation: 0, spin: 0, health: 5, maxHealth: 5, damageMarks: []
-    }, 'other existing asteroids remain unaffected by the accepted shot');
-    assert.equal((await call('player_action', cannonPayload)).data.duplicate, true);
+    assert.equal(shotOne.data.room.round.flight.asteroids.some(rock => rock.id === 'rock_cannon_target'), true,
+      'an accepted FIRE request leaves the target asteroid alive while the projectile travels');
+    assert.equal(shotOne.data.room.round.flight.projectiles.length, 1, 'accepted FIRE creates an authoritative projectile');
+    assert.equal(Object.hasOwn(shotOne.data.room.round.flight.projectiles[0], 'shooterId'), false,
+      "public projectile snapshots do not expose the shooter's private session ID");
+    assert.equal(shotOne.data.room.round.flight.weaponEvents[0].destroyed, false, 'launch is not represented as impact');
+    assert.equal(shotOne.data.room.round.score, 0, 'score is not awarded when FIRE is merely accepted');
+    assert.equal(shotOne.data.room.round.flight.asteroids.some(rock => rock.id === 'rock_cannon_other'), true,
+      'other original asteroids remain in the active shared field');
+    const replayedLaunch = await call('player_action', cannonPayload);
+    assert.equal(replayedLaunch.data.duplicate, true);
+    assert.equal(replayedLaunch.data.room.round.flight.projectiles.length, 1,
+      'replaying the accepted shot cannot create a duplicate projectile');
     const immediateSecondShot = await call('player_action', { ...cannonPayload, actionId: 'cannon-cooldown-1', targetAsteroidId: 'rock_cannon_other' });
     assert.equal(immediateSecondShot.status, 400, 'a separate shot still obeys the authoritative cooldown');
-    assert.equal(store.rooms.get(coopRoom.data.roomCode).data.round.score, 50,
-      'cooldown rejection cannot award a second destruction score');
-    now += 2107; // 1.8s base × (1.5 − 33% weapon allocation)
+    assert.equal(store.rooms.get(coopRoom.data.roomCode).data.round.score, 0,
+      'cooldown rejection cannot award a destruction score');
+    now += 80;
+    const midFlight = await call('get_state', { roomCode: coopRoom.data.roomCode, playerId: coopNavigator.data.playerId });
+    assert.equal(midFlight.data.room.round.flight.asteroids.some(rock => rock.id === 'rock_cannon_target'), true,
+      'the target remains alive in a later authoritative snapshot during projectile travel');
+    assert.equal(midFlight.data.room.round.flight.projectiles.length, 1, 'the travelling projectile is synchronized to the firing client');
+    assert.equal(midFlight.data.room.round.score, 0, 'score remains unchanged before confirmed collision');
+    now += 80;
+    const lateFlight = await call('get_state', { roomCode: coopRoom.data.roomCode, playerId: coopNavigator.data.playerId });
+    assert.equal(lateFlight.data.room.round.flight.asteroids.some(rock => rock.id === 'rock_cannon_target'), true,
+      'the target is still visible immediately before the projectile reaches it');
+    assert.equal(lateFlight.data.room.round.score, 0, 'there is no score before the impact tick');
+    now += 80;
+    const impactState = await call('get_state', { roomCode: coopRoom.data.roomCode, playerId: coopNavigator.data.playerId });
+    assert.equal(impactState.data.room.round.flight.asteroids.some(rock => rock.id === 'rock_cannon_target'), false,
+      'the server removes the selected asteroid only after projectile collision');
+    assert.equal(impactState.data.room.round.flight.projectiles.length, 1, 'impact state retains the projectile record for event synchronization');
+    assert.equal(impactState.data.room.round.flight.projectiles[0].active, false);
+    assert.equal(impactState.data.room.round.flight.projectiles[0].destroyed, true);
+    assert.equal(impactState.data.room.round.flight.weaponEvents[0].destroyed, true, 'confirmed collision marks the shot destroyed');
+    assert.ok(Number.isFinite(impactState.data.room.round.flight.weaponEvents[0].impactAt), 'collision event has authoritative impact time');
+    assert.equal(impactState.data.room.round.score, 50, 'one confirmed impact awards +50 exactly once');
+    assert.equal(impactState.data.room.round.flight.asteroids.some(rock => rock.id === 'rock_cannon_other'), true,
+      'the other asteroid is not affected by the shot');
     const destroyedTargetRetry = await call('player_action', { ...cannonPayload, actionId: 'cannon-destroyed-retry', targetAsteroidId: 'rock_cannon_target' });
     assert.equal(destroyedTargetRetry.status, 400, 'a destroyed target cannot be shot again after cooldown');
     assert.equal(store.rooms.get(coopRoom.data.roomCode).data.round.score, 50,
