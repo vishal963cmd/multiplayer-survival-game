@@ -586,3 +586,15 @@ Hosted multi-instance/production behavior remains unverified and no deployment w
 - [x] `npm test`, configured Netlify build, live API integration, syntax checks for 43 JS files and staged/unstaged `git diff --check` all passed after current edits.
 
 No deployment, commit, push, reset or production data operation occurred. Hosted multi-instance behavior remains unverified.
+
+## Phase 33 — Production polling load guard (2026-10-31)
+
+- [x] Before the local fix, compare the deployed static client assets with the checkout: all 17 script assets in the live HTML matched byte-for-byte.
+- [x] Trace active polling through `get_state`: every poll ticks the room and performs an ETag-protected Blob write; production bypasses the local per-process mutation queue.
+- [x] Reduce active poll spacing from 250/80 ms to 750/650 ms after each response, retaining 1500 ms lobby polling and the existing no-overlap guard.
+- [x] Add bounded exponential retry backoff for repeated poll errors (1500 ms up to 8000 ms) and regression coverage for cadence/backoff.
+- [ ] Verify valid-room Blob latency, multi-client contention and gameplay in production. The measured 725–1273 ms API requests had no room code and were rejected before Blob reads/writes, so they are only endpoint/runtime baseline timings.
+- [ ] Browser-based local/production movement and synchronization comparison remains outstanding; the browser tool reports local browser use disabled.
+- [ ] Local API integration could not run because Netlify Dev could not retrieve the linked site (Not Found) and the configured port 8888 was already occupied.
+
+This local adjustment reduces write pressure but is not evidence that deployed gameplay performance is fixed; production still serves the pre-change polling cadence until an approved deployment. No production room was created or changed; no deployment, commit, push, reset or cleanup occurred.

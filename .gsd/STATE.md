@@ -10,6 +10,12 @@ Before production readiness, validate deployed multi-instance Blobs CAS behavior
 
 Preserved initial user changes: `netlify/functions/game.js` was already modified and `test/store.dev.test.js` already existed as untracked when work began. No commit was created.
 
+## Current production performance investigation — 2026-10-31
+
+Before this local fix, the supplied Netlify site served the same 17 JavaScript files as the checkout (SHA-256 comparison). The movement model is elapsed-time-based, caps catch-up after suspension, and the game renderer uses one RAF loop; no frame-rate multiplier was found in the inspected ship/asteroid code. Each active `get_state` poll nevertheless advances and writes the full room Blob, while only Netlify Dev serializes mutations in-process. Local active poll spacing is now 750 ms in flight and 650 ms while a projectile is active (1500 ms in the lobby), with existing single-request-at-a-time behavior and capped exponential retry backoff to 8000 ms. Tests cover interval selection and backoff. The deployed version remains on its previously published cadence until a deployment is separately approved.
+
+Production timing evidence is limited: static script GETs took 183–647 ms; three rejected no-room function requests took 725–1273 ms versus 8–12 ms locally. Those API requests failed before accessing Blobs and do not measure valid-room performance. Local Netlify Dev could not start: the linked site ID returned Not Found and configured port 8888 was already occupied, so local API integration could not run. The code change is a request-load reduction based on the configured 300/minute per-IP/domain cap and response-plus-delay estimates, not a claim of fixed production gameplay. Browser use is disabled by the current tool settings; no production room/session was created or mutated. Valid-room Blob latency, six-player contention, production game speed/sync and real browser comparisons remain unverified.
+
 ## Current Phase 3 status — 2026-10-28
 
 Implementation status: **locally implemented; browser gameplay inspection is partially blocked by available browser tooling**. The original SVG/CSS mission intro, skip control, reduced-motion behavior, procedural Canvas world, visible warship/asteroid field, host-only WASD/arrow controls, server-authoritative movement/collision damage, shield/point-defense integration, and shared impact events are implemented. Existing room/session lifecycle, rate limit, request validation, abilities, timers, results and rematches remain on the prior API/storage path.

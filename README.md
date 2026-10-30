@@ -49,7 +49,7 @@ Open `http://localhost:8888` in two browser tabs to test multiplayer.
 │   ├── gameData.js            ← Browser-compatible role/emergency data
 │   ├── sound.js               ← Synthesized Web Audio API sounds
 │   ├── actions.js             ← API call wrappers (all calls to /.netlify/functions/game)
-│   ├── poller.js              ← 1500ms polling engine
+│   ├── poller.js              ← serialized, bounded polling with retry backoff
 │   ├── ui.js                  ← DOM renderer
 │   ├── spaceRenderer.js       ← Original Canvas space scene, ship, rocks and impact effects
 │   ├── sceneCoordinates.js    ← Shared snapshot extrapolation and pointer/world mapping
@@ -81,13 +81,15 @@ Open `http://localhost:8888` in two browser tabs to test multiplayer.
 | Frontend | Vanilla HTML + CSS + JS | Zero build, instant deploy, reviewer-friendly |
 | Backend | Netlify Functions (Node.js) | Serverless, free tier, handles all game logic |
 | State store | Netlify Blobs (strong consistency) | Persistent KV, ETag conditional writes |
-| Real-time | Client polling every 1500ms plus input-edge requests | Serverless functions do not hold a WebSocket; snapshots synchronize the shared flight state |
+| Real-time | Client polling (1500ms lobby, 750ms flight, 500ms active projectile) plus input-edge requests | Serverless functions do not hold a WebSocket; snapshots synchronize the shared flight state |
 
 ### Server authority
 All timers, hull integrity, scores, emergency state, ship position and asteroid collisions live exclusively in the room record in Netlify Blobs. The host submits only a validated direction vector; the server advances movement and collision state. Client Canvas animation extrapolates the latest server snapshot and never writes state per frame.
 
 ### Concurrency protection
 Each room is stored as one blob. Mutations read strongly and write with Netlify Blobs `onlyIfMatch` ETags; room creation uses atomic `onlyIfNew`. On a stale ETag, the function re-reads and retries up to four times. Netlify documents these conditional writes as atomic. This protects a single room key across function instances; it does not provide transactions spanning multiple keys. Netlify Dev's sandbox omits ETags, so only local development uses a per-process queue. That queue is not a production coordination mechanism.
+
+Every active `get_state` poll also advances and writes the authoritative room, so browser polling is intentionally serialized and spaced after each response. Lobby polling is 1500 ms, active flight is 750 ms, and an in-flight projectile uses 650 ms; failed polls back off from 1500 ms to a maximum of 8000 ms. At an observed production no-room API baseline of 0.725–1.273 s, the response-plus-delay model projects about 187–262 requests/minute for six clients sharing an IP during active projectile polling, below the configured 300/minute per-IP/domain limit. This is a projection, not a measurement of valid room/Blob calls or proof of production gameplay latency.
 
 ### Multiplayer is real
 This is **not** two independent local-state browser tabs. Every poll reads from the same Netlify Blob, and every action writes to it. Players on separate phones see the same hull, emergencies, ship position, asteroid field, impact events and timer. Only the room host steers the shared ship; other crew members coordinate emergencies and abilities.
@@ -265,7 +267,7 @@ netlify deploy --prod
 #### Required Netlify settings
 - **Node.js version**: 18+ for the deployed function runtime. Local Netlify CLI development requires Node.js 22.13+.
 - **Blobs**: automatically provisioned when you deploy a function that uses `@netlify/blobs`
-- The game function exports a Netlify per-IP/domain limit of 300 requests per 60 seconds. Six players polling every 1.5 seconds generate about 240 requests per minute when sharing one IP. Netlify documents that enforcement can take up to 10 seconds to begin, so this is abuse mitigation rather than an instantaneous cap. Verify the rule in a deploy preview before release.
+- The game function exports a Netlify per-IP/domain limit of 300 requests per 60 seconds. Active poll spacing is documented above; actual requests also depend on response latency, actions, retries, and whether clients share an IP. Netlify documents that enforcement can take up to 10 seconds to begin, so this is abuse mitigation rather than an instantaneous cap. Verify the rule in a deploy preview before release.
 - The scheduled cleanup function runs hourly. Lobby rooms expire after 24 hours without activity; active matches are retained through their 90-second round plus a 10-minute cleanup grace; results remain for 24 hours; closed records are purged after one additional hour. Cleanup finalizes an expired active match before setting result retention. It never expires an active match based on a player disconnect alone.
 
 ### Player sessions and room lifecycle
@@ -406,7 +408,7 @@ Verification evidence: `test-artifacts/phase17b-2026-10-30T16-12-11-109Z/report.
 
 ## Phase 32 — Remove Gunner impact presentation lag (2026-10-30)
 
-The authoritative flight tick already removed the asteroid and awarded score in the same `advanceFlight` update that returned its collision; tracing showed two surrounding timing issues. First, the FIRE action created the projectile before ticking the room, so the tick's accumulated elapsed interval could advance a newly launched shot through time before it existed. Projectile simulation now starts at `createdAt`, and the target's sweep interval is aligned to that launch time. Second, the impact burst was gated on comparing the client clock with `impactAt`; it now starts as soon as the authoritative destroyed event is applied and uses a nonnegative event age, so wall-clock skew cannot defer the effect. Stale snapshots remain rejected by monotonic match/round revisions. Polling now runs every 250 ms during a live match and 80 ms while a projectile is active, returning to 1.5 s in the lobby.
+The authoritative flight tick already removed the asteroid and awarded score in the same `advanceFlight` update that returned its collision; tracing showed two surrounding timing issues. First, the FIRE action created the projectile before ticking the room, so the tick's accumulated elapsed interval could advance a newly launched shot through time before it existed. Projectile simulation now starts at `createdAt`, and the target's sweep interval is aligned to that launch time. Second, the impact burst was gated on comparing the client clock with `impactAt`; it now starts as soon as the authoritative destroyed event is applied and uses a nonnegative event age, so wall-clock skew cannot defer the effect. Stale snapshots remain rejected by monotonic match/round revisions. Current polling is 750 ms during live flight and 650 ms while a projectile is active, returning to 1.5 s in the lobby; failed polls back off up to 8 seconds.
 
 Two-client Chrome evidence: `test-artifacts/phase17b-2026-10-30T16-21-21-332Z/report.json`. A distant 57%-range shot and nearby shot were fired. Both clients applied and drew the authoritative impact on the first frame after receiving its state update. For the distant shot, collision `impactAt` was 1793377286820.15; host received the event at 1793377286898 and drew it at 1793377286911 (13 ms after receipt, 91 ms after impact). Guest received at 1793377286919 and drew it at 1793377286929 (10 ms after receipt, 109 ms after impact). Both held the same event ID, collision time/coordinates, asteroid removal and score. Zero browser errors. Unit coverage now protects launch-time simulation, same-update collision, immediate event rendering despite clock skew, impact position and stale-snapshot rejection. Final test/build/syntax/diff results are recorded below after completion.
 Phase 32 final verification: `npm test` passed all configured suites including poller, projectile launch-time, collision timing, renderer and stale-snapshot regressions; `netlify build` passed and bundled both functions; `node test/api.room.integration.test.js http://localhost:8888/.netlify/functions/game` passed; syntax checks passed for 43 JavaScript files; `git diff --check` and staged diff check passed. Active-match polling increases Netlify Blobs traffic while improving live synchronization. No production environment was accessed.

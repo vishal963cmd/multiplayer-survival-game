@@ -7,8 +7,12 @@
 window.Poller = (function() {
 
   const POLL_INTERVAL_MS = 1500;
-  const FLIGHT_POLL_INTERVAL_MS = 250;
-  const PROJECTILE_POLL_INTERVAL_MS = 80;
+  // Every active poll ticks and writes the authoritative room Blob. These
+  // delays are added after a response completes, so they limit request volume
+  // without creating overlapping state mutations on slower hosted functions.
+  const FLIGHT_POLL_INTERVAL_MS = 750;
+  const PROJECTILE_POLL_INTERVAL_MS = 650;
+  const MAX_ERROR_BACKOFF_MS = 8000;
 
   let timer       = null;
   let roomCode    = null;
@@ -16,11 +20,17 @@ window.Poller = (function() {
   let running     = false;
   let pollActive  = false; // prevent overlapping polls
   let generation  = 0;
+  let errorBackoffMs = 0;
+
+  function nextErrorBackoffMs(current) {
+    return current ? Math.min(MAX_ERROR_BACKOFF_MS, current * 2) : POLL_INTERVAL_MS;
+  }
 
   function start(rc, pid) {
     stop(); // clear any existing timer
     roomCode = rc;
     playerId = pid;
+    errorBackoffMs = 0;
     generation++;
     running = true;
     _poll(); // immediate first poll
@@ -42,12 +52,14 @@ window.Poller = (function() {
     pollActive = true;
     try {
       const data = await API.getState(pollRoomCode, pollPlayerId, App.getFlightInput());
+      errorBackoffMs = 0;
       if (running && pollGeneration === generation && data && data.room) {
         App.onStateUpdate(data.room);
       }
     } catch (e) {
       // Network issues are expected — don't break polling
       console.warn('[Poller] Poll error:', e.message);
+      errorBackoffMs = nextErrorBackoffMs(errorBackoffMs);
       if (running && pollGeneration === generation) App.onPollError(e);
     } finally {
       pollActive = false;
@@ -61,8 +73,8 @@ window.Poller = (function() {
     const inFlight = room?.phase === 'playing' &&
       Array.isArray(room.round?.flight?.projectiles) &&
       room.round.flight.projectiles.some(projectile => projectile?.active);
-    const delay = inFlight ? PROJECTILE_POLL_INTERVAL_MS
-      : room?.phase === 'playing' ? FLIGHT_POLL_INTERVAL_MS : POLL_INTERVAL_MS;
+    const delay = Math.max(errorBackoffMs, inFlight ? PROJECTILE_POLL_INTERVAL_MS
+      : room?.phase === 'playing' ? FLIGHT_POLL_INTERVAL_MS : POLL_INTERVAL_MS);
     timer = setTimeout(_poll, delay);
   }
 
@@ -78,6 +90,6 @@ window.Poller = (function() {
       Array.isArray(room.round?.flight?.projectiles) && room.round.flight.projectiles.some(projectile => projectile?.active);
     return inFlight ? PROJECTILE_POLL_INTERVAL_MS
       : room?.phase === 'playing' ? FLIGHT_POLL_INTERVAL_MS : POLL_INTERVAL_MS;
-  } };
+  }, nextErrorBackoffMs };
 
 })();
