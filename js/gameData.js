@@ -10,6 +10,7 @@ window.GAME_DATA = {
   MIN_PLAYERS_TO_START: 2,
 
   ROLES: [
+    { id: 'pilot', name: 'Pilot', icon: '🛸', color: '#67e8f9', description: 'Steer the shared ship with WASD or arrow keys.', abilities: [] },
     {
       id: 'engineer',
       name: 'Engineer',
@@ -61,6 +62,7 @@ window.GAME_DATA = {
       color: '#ef4444',
       description: 'Eliminates external threats with precision firepower.',
       abilities: [
+        { id: 'pulse_cannon', name: 'Pulse Cannon', icon: '☄️', description: 'Aim at a real asteroid and fire. One precise shot destroys the selected rock.', cooldownMs: 1800 },
         { id: 'counter_blast',  name: 'Counter Blast',  icon: '💥', description: 'Destroy an asteroid or radiation threat — +50 score', cooldownMs: 15000 },
         { id: 'point_defense',  name: 'Point Defense',  icon: '🎖️', description: 'Block the next asteroid impact automatically',          cooldownMs: 45000 }
       ]
@@ -75,7 +77,9 @@ window.GAME_DATA = {
         { id: 'all_hands',        name: 'All Hands',        icon: '✊', description: 'Halve all ability cooldowns for 10 seconds',  cooldownMs: 50000 },
         { id: 'priority_override',name: 'Priority Override', icon: '🚨', description: 'Instantly resolve any one active emergency', cooldownMs: 60000 }
       ]
-    }
+    },
+    { id: 'power_operator', name: 'Power Systems Operator', icon: '⚡', color: '#facc15', description: 'Route power and boost ship systems.', abilities: [{ id: 'allocate_power', name: 'Route Power', icon: '🔋', description: 'Distribute the 100-point power budget across ship systems.', cooldownMs: 1000 }, { id: 'boost_engines', name: 'Engine Overdrive', icon: '🚀', description: 'Boost shared ship acceleration for 8 seconds.', cooldownMs: 25000 }] },
+    { id: 'communications_officer', name: 'Communications Officer', icon: '📡', color: '#c084fc', description: 'Decode and confirm the crew’s incoming signal.', abilities: [{ id: 'decode_signal', name: 'Decode Signal', icon: '🔐', description: 'Submit the active signal code before its deadline.', cooldownMs: 0 }] }
   ],
 
   EMERGENCY_TYPES: [
@@ -89,16 +93,18 @@ window.GAME_DATA = {
   ],
 
   getRoleDef(roleId)      { return this.ROLES.find(r => r.id === roleId) || null; },
+  getRoleDefs(roleIds)    { return (roleIds || []).map(id => this.getRoleDef(id)).filter(Boolean); },
   getEmergencyDef(typeId) { return this.EMERGENCY_TYPES.find(e => e.id === typeId) || null; },
 
   // Can the player's role resolve this emergency?
   canResolve(roleId, emergency) {
+    const roles = Array.isArray(roleId) ? roleId : [roleId];
     const def = this.getEmergencyDef(emergency.typeId || emergency);
     if (!def) return false;
     if (!def.resolveRole) return true;
-    if (def.resolveRole === roleId) return true;
-    if (def.altRole === roleId) return true;
-    if (roleId === 'engineer') return true; // universal fallback
+    if (roles.includes(def.resolveRole)) return true;
+    if (roles.includes(def.altRole)) return true;
+    if (roles.includes('engineer')) return true; // universal fallback
     return false;
   }
 };

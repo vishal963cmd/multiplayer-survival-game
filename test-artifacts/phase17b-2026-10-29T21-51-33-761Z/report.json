@@ -1,0 +1,5701 @@
+{
+  "baseUrl": "http://localhost:8888",
+  "startedAt": "2026-10-29T21:51:33.785Z",
+  "browser": "isolated headless Chrome via CDP",
+  "server": "existing local Netlify Dev; no server process started by this script",
+  "room": {
+    "createdThroughLandingUi": true,
+    "roomCode": "GWVKLC"
+  },
+  "clients": {
+    "host": {
+      "nickname": "CDP Pilot",
+      "role": []
+    },
+    "guest": {
+      "nickname": "CDP Gunner",
+      "role": []
+    }
+  },
+  "input": {
+    "pilotThrustObservedByGuest": true,
+    "pilotRotationObservedByGuest": false,
+    "before": {
+      "x": 0.43,
+      "y": 0.52,
+      "vx": 0,
+      "vy": 0,
+      "inputX": 0,
+      "inputY": 0,
+      "radius": 0.038,
+      "heading": -1.5707963267948966,
+      "speed": 0,
+      "accelerationMultiplier": 0.8560000000000001
+    },
+    "after": {
+      "x": 0.43,
+      "y": 0.50733714064,
+      "vx": 4.954254741491456e-18,
+      "vy": -0.08090912000000001,
+      "inputX": 0,
+      "inputY": -1,
+      "radius": 0.038,
+      "heading": -1.5707963267948966,
+      "speed": 0.08090912000000001,
+      "accelerationMultiplier": 0.8560000000000001
+    }
+  },
+  "gunner": {
+    "selectedThroughUi": true,
+    "targetId": "rock_0",
+    "targetLabel": "TARGET 01 · HULL 3/3 · 34%",
+    "healthBefore": 3,
+    "healthAfterObservedByHost": 2,
+    "authoritativeDamageObserved": true,
+    "destructionShots": 0,
+    "destroyedOnBothClients": true,
+    "scoreBeforeDestruction": 0,
+    "scoreAfterDestruction": 0,
+    "guestScoreAfterDestruction": 0,
+    "destructionScoreSynchronized": false
+  },
+  "viewports": [
+    {
+      "profile": "small-mobile",
+      "width": 360,
+      "height": 800,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 360,
+            "innerHeight": 800
+          },
+          "scene": {
+            "x": 0,
+            "y": 176.890625,
+            "width": 360,
+            "height": 255.125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 360,
+              "height": 800,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "800px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 360,
+              "height": 800,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "800px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 685.109375,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "685.109px",
+              "gridRows": "317.125px 162.984px 205px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 317.125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "317.125px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 62,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "62px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 0,
+            "y": 176.890625,
+            "width": 360,
+            "height": 255.125,
+            "cssWidth": "360px",
+            "cssHeight": "255.125px",
+            "bufferWidth": 360,
+            "bufferHeight": 255,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 360,
+            "height": 255.125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 154.8,
+            "y": 132.665
+          },
+          "shipBrightSamplePixels": 190,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_0",
+              "x": 0.5392262457054456,
+              "y": 0.3929751406262861,
+              "pixels": 30
+            },
+            {
+              "id": "rock_1",
+              "x": 0.5379991548643702,
+              "y": 0.5051129726241383,
+              "pixels": 18
+            },
+            {
+              "id": "rock_2",
+              "x": 0.6300888427929479,
+              "y": 0.47491012435081187,
+              "pixels": 8
+            },
+            {
+              "id": "rock_3",
+              "x": 0.6996115848270986,
+              "y": 0.5104053208965216,
+              "pixels": 19
+            },
+            {
+              "id": "rock_4",
+              "x": 0.7022883127971971,
+              "y": 0.6194470430181486,
+              "pixels": 14
+            },
+            {
+              "id": "rock_5",
+              "x": 0.8752845849248398,
+              "y": 0.7988750935753222,
+              "pixels": 15
+            },
+            {
+              "id": "rock_6",
+              "x": 0.8150514075281352,
+              "y": 0.7672413640620548,
+              "pixels": 24
+            },
+            {
+              "id": "rock_7",
+              "x": 0.9175872376967952,
+              "y": 0.6981301624654593,
+              "pixels": 13
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_0",
+              2
+            ],
+            [
+              "rock_1",
+              3
+            ],
+            [
+              "rock_2",
+              3
+            ],
+            [
+              "rock_3",
+              3
+            ],
+            [
+              "rock_4",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "host-small-mobile-360x800.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 360,
+            "innerHeight": 800
+          },
+          "scene": {
+            "x": 0,
+            "y": 176.890625,
+            "width": 360,
+            "height": 255.125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 360,
+              "height": 800,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "800px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 360,
+              "height": 800,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "800px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 685.109375,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "685.109px",
+              "gridRows": "317.125px 162.984px 205px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 317.125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "317.125px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 62,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "62px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 0,
+            "y": 176.890625,
+            "width": 360,
+            "height": 255.125,
+            "cssWidth": "360px",
+            "cssHeight": "255.125px",
+            "bufferWidth": 360,
+            "bufferHeight": 255,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 360,
+            "height": 255.125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 154.8,
+            "y": 132.665
+          },
+          "shipBrightSamplePixels": 198,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_0",
+              "x": 0.5179461282987957,
+              "y": 0.39490535827285134,
+              "pixels": 29
+            },
+            {
+              "id": "rock_1",
+              "x": 0.5129849052885478,
+              "y": 0.5070051169294252,
+              "pixels": 14
+            },
+            {
+              "id": "rock_2",
+              "x": 0.6027352213336612,
+              "y": 0.4737193245891972,
+              "pixels": 10
+            },
+            {
+              "id": "rock_3",
+              "x": 0.6792382123582621,
+              "y": 0.5079685142819412,
+              "pixels": 22
+            },
+            {
+              "id": "rock_4",
+              "x": 0.6734325791323694,
+              "y": 0.620084933449969,
+              "pixels": 16
+            },
+            {
+              "id": "rock_5",
+              "x": 0.8590982832758455,
+              "y": 0.8019566633130069,
+              "pixels": 16
+            },
+            {
+              "id": "rock_6",
+              "x": 0.7882065818631018,
+              "y": 0.7649009905403142,
+              "pixels": 24
+            },
+            {
+              "id": "rock_7",
+              "x": 0.8914028553621459,
+              "y": 0.6992164601933615,
+              "pixels": 11
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_0",
+              2
+            ],
+            [
+              "rock_1",
+              3
+            ],
+            [
+              "rock_2",
+              3
+            ],
+            [
+              "rock_3",
+              3
+            ],
+            [
+              "rock_4",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "guest-small-mobile-360x800.png"
+        }
+      }
+    },
+    {
+      "profile": "mobile",
+      "width": 390,
+      "height": 844,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 390,
+            "innerHeight": 844
+          },
+          "scene": {
+            "x": 0,
+            "y": 176.890625,
+            "width": 390,
+            "height": 299.125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "844px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "844px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 729.109375,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "729.109px",
+              "gridRows": "361.125px 162.984px 205px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 361.125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "361.125px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 62,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "62px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 0,
+            "y": 176.890625,
+            "width": 390,
+            "height": 299.125,
+            "cssWidth": "390px",
+            "cssHeight": "299.125px",
+            "bufferWidth": 390,
+            "bufferHeight": 299,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 390,
+            "height": 299.125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 167.7,
+            "y": 155.54500000000002
+          },
+          "shipBrightSamplePixels": 240,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_0",
+              "x": 0.4497895258501396,
+              "y": 0.4010875176219923,
+              "pixels": 75
+            },
+            {
+              "id": "rock_8",
+              "x": 1.012726629619323,
+              "y": 0.5812500544063715,
+              "pixels": 0
+            },
+            {
+              "id": "rock_2",
+              "x": 0.5142230311399313,
+              "y": 0.469866076303972,
+              "pixels": 27
+            },
+            {
+              "id": "rock_3",
+              "x": 0.6133130542751388,
+              "y": 0.5000833758970236,
+              "pixels": 36
+            },
+            {
+              "id": "rock_4",
+              "x": 0.5800597805754283,
+              "y": 0.6221490506019915,
+              "pixels": 19
+            },
+            {
+              "id": "rock_5",
+              "x": 0.8067218543550453,
+              "y": 0.8119281578415523,
+              "pixels": 22
+            },
+            {
+              "id": "rock_6",
+              "x": 0.7013407780602107,
+              "y": 0.7573278950878892,
+              "pixels": 33
+            },
+            {
+              "id": "rock_7",
+              "x": 0.8066741464868186,
+              "y": 0.7027315556713857,
+              "pixels": 20
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_0",
+              2
+            ],
+            [
+              "rock_8",
+              3
+            ],
+            [
+              "rock_2",
+              3
+            ],
+            [
+              "rock_3",
+              3
+            ],
+            [
+              "rock_4",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "host-mobile-390x844.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 390,
+            "innerHeight": 844
+          },
+          "scene": {
+            "x": 0,
+            "y": 176.890625,
+            "width": 390,
+            "height": 299.125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "844px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "844px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 729.109375,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "729.109px",
+              "gridRows": "361.125px 162.984px 205px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 361.125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "361.125px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 62,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "62px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 0,
+            "y": 176.890625,
+            "width": 390,
+            "height": 299.125,
+            "cssWidth": "390px",
+            "cssHeight": "299.125px",
+            "bufferWidth": 390,
+            "bufferHeight": 299,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 390,
+            "height": 299.125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 167.7,
+            "y": 155.54500000000002
+          },
+          "shipBrightSamplePixels": 257,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_0",
+              "x": 0.4213825766705086,
+              "y": 0.40366417608415245,
+              "pixels": 61
+            },
+            {
+              "id": "rock_8",
+              "x": 0.9827953850221931,
+              "y": 0.5774404954154941,
+              "pixels": 11
+            },
+            {
+              "id": "rock_2",
+              "x": 0.4787407391526488,
+              "y": 0.4683214068018772,
+              "pixels": 16
+            },
+            {
+              "id": "rock_3",
+              "x": 0.5868853305537705,
+              "y": 0.49692242392056285,
+              "pixels": 33
+            },
+            {
+              "id": "rock_4",
+              "x": 0.5426289939819019,
+              "y": 0.622976502813079,
+              "pixels": 20
+            },
+            {
+              "id": "rock_5",
+              "x": 0.7857254724990388,
+              "y": 0.8159254770767567,
+              "pixels": 26
+            },
+            {
+              "id": "rock_6",
+              "x": 0.6665184806173606,
+              "y": 0.7542920332082729,
+              "pixels": 31
+            },
+            {
+              "id": "rock_7",
+              "x": 0.7727085561942306,
+              "y": 0.704140668290127,
+              "pixels": 20
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_0",
+              2
+            ],
+            [
+              "rock_8",
+              3
+            ],
+            [
+              "rock_2",
+              3
+            ],
+            [
+              "rock_3",
+              3
+            ],
+            [
+              "rock_4",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "guest-mobile-390x844.png"
+        }
+      }
+    },
+    {
+      "profile": "tablet",
+      "width": 768,
+      "height": 1024,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 768,
+            "innerHeight": 1024
+          },
+          "scene": {
+            "x": 184.3125,
+            "y": 99.1875,
+            "width": 376.328125,
+            "height": 857.3125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 768,
+              "height": 1024,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1024px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 768,
+              "height": 1024,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1024px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 768,
+              "height": 924.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "924.812px",
+              "gridRows": "924.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 184.3125,
+              "y": 99.1875,
+              "width": 376.328125,
+              "height": 924.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "924.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 184.3125,
+              "y": 956.5,
+              "width": 376.328125,
+              "height": 67.5,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "67.5px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 184.3125,
+            "y": 99.1875,
+            "width": 376.328125,
+            "height": 857.3125,
+            "cssWidth": "376.328px",
+            "cssHeight": "857.312px",
+            "bufferWidth": 376,
+            "bufferHeight": 857,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 376.328125,
+            "height": 857.3125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 161.82109375,
+            "y": 445.8025
+          },
+          "shipBrightSamplePixels": 385,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_0",
+              "x": 0.3437904504660741,
+              "y": 0.41070218665394015,
+              "pixels": 63
+            },
+            {
+              "id": "rock_8",
+              "x": 0.8974641276980113,
+              "y": 0.5665797890560483,
+              "pixels": 17
+            },
+            {
+              "id": "rock_2",
+              "x": 0.3775839503598154,
+              "y": 0.46391769447590575,
+              "pixels": 20
+            },
+            {
+              "id": "rock_3",
+              "x": 0.5115422927444881,
+              "y": 0.4879108371949442,
+              "pixels": 61
+            },
+            {
+              "id": "rock_4",
+              "x": 0.43591722420254037,
+              "y": 0.6253354938439624,
+              "pixels": 28
+            },
+            {
+              "id": "rock_5",
+              "x": 0.7257903461100754,
+              "y": 0.8273360065299769,
+              "pixels": 34
+            },
+            {
+              "id": "rock_6",
+              "x": 0.5671166497350435,
+              "y": 0.7456260274791864,
+              "pixels": 51
+            },
+            {
+              "id": "rock_7",
+              "x": 0.6757522348135707,
+              "y": 0.7081630443108977,
+              "pixels": 34
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_0",
+              2
+            ],
+            [
+              "rock_8",
+              3
+            ],
+            [
+              "rock_2",
+              3
+            ],
+            [
+              "rock_3",
+              3
+            ],
+            [
+              "rock_4",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "host-tablet-768x1024.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 768,
+            "innerHeight": 1024
+          },
+          "scene": {
+            "x": 184.3125,
+            "y": 99.1875,
+            "width": 376.328125,
+            "height": 857.3125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 768,
+              "height": 1024,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1024px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 768,
+              "height": 1024,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1024px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 768,
+              "height": 924.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "924.812px",
+              "gridRows": "924.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 184.3125,
+              "y": 99.1875,
+              "width": 376.328125,
+              "height": 924.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "924.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 184.3125,
+              "y": 956.5,
+              "width": 376.328125,
+              "height": 67.5,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "67.5px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 184.3125,
+            "y": 99.1875,
+            "width": 376.328125,
+            "height": 857.3125,
+            "cssWidth": "376.328px",
+            "cssHeight": "857.312px",
+            "bufferWidth": 376,
+            "bufferHeight": 857,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 376.328125,
+            "height": 857.3125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 161.82109375,
+            "y": 445.8025
+          },
+          "shipBrightSamplePixels": 359,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_0",
+              "x": 0.3012302156527752,
+              "y": 0.4145626219470706,
+              "pixels": 73
+            },
+            {
+              "id": "rock_8",
+              "x": 0.8512067496842652,
+              "y": 0.5606922887974198,
+              "pixels": 17
+            },
+            {
+              "id": "rock_2",
+              "x": 0.3227476809249244,
+              "y": 0.4615304779726685,
+              "pixels": 20
+            },
+            {
+              "id": "rock_3",
+              "x": 0.4706994469932825,
+              "y": 0.48302572959495954,
+              "pixels": 95
+            },
+            {
+              "id": "rock_4",
+              "x": 0.37806964492163603,
+              "y": 0.6266142836247341,
+              "pixels": 29
+            },
+            {
+              "id": "rock_5",
+              "x": 0.6934177428120872,
+              "y": 0.8334991460053466,
+              "pixels": 32
+            },
+            {
+              "id": "rock_6",
+              "x": 0.5134269984049766,
+              "y": 0.7409452804357054,
+              "pixels": 45
+            },
+            {
+              "id": "rock_7",
+              "x": 0.6233834701442715,
+              "y": 0.7103356397667026,
+              "pixels": 30
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_0",
+              2
+            ],
+            [
+              "rock_8",
+              3
+            ],
+            [
+              "rock_2",
+              3
+            ],
+            [
+              "rock_3",
+              3
+            ],
+            [
+              "rock_4",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "guest-tablet-768x1024.png"
+        }
+      }
+    },
+    {
+      "profile": "laptop",
+      "width": 1366,
+      "height": 768,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 1366,
+            "innerHeight": 768
+          },
+          "scene": {
+            "x": 191.234375,
+            "y": 99.1875,
+            "width": 956.21875,
+            "height": 601.3125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 1366,
+              "height": 768,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "768px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 1366,
+              "height": 768,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "768px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 1366,
+              "height": 668.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "668.812px",
+              "gridRows": "668.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 191.234375,
+              "y": 99.1875,
+              "width": 956.21875,
+              "height": 668.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "668.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 191.234375,
+              "y": 700.5,
+              "width": 956.21875,
+              "height": 67.5,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "67.5px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 191.234375,
+            "y": 99.1875,
+            "width": 956.21875,
+            "height": 601.3125,
+            "cssWidth": "956.219px",
+            "cssHeight": "601.312px",
+            "bufferWidth": 956,
+            "bufferHeight": 601,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 956.21875,
+            "height": 601.3125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 411.1740625,
+            "y": 312.6825
+          },
+          "shipBrightSamplePixels": 977,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_0",
+              "x": 0.19954739049741613,
+              "y": 0.4237857845695738,
+              "pixels": 154
+            },
+            {
+              "id": "rock_8",
+              "x": 0.7391006335568342,
+              "y": 0.5464237587588606,
+              "pixels": 41
+            },
+            {
+              "id": "rock_9",
+              "x": 0.8830824912940295,
+              "y": 0.17125008990210613,
+              "pixels": 148
+            },
+            {
+              "id": "rock_10",
+              "x": 0.9429370923703336,
+              "y": 0.25033147696800934,
+              "pixels": 69
+            },
+            {
+              "id": "rock_4",
+              "x": 0.23787433513497383,
+              "y": 0.6297134682699005,
+              "pixels": 71
+            },
+            {
+              "id": "rock_5",
+              "x": 0.6147767489514073,
+              "y": 0.8484709235044767,
+              "pixels": 86
+            },
+            {
+              "id": "rock_6",
+              "x": 0.38300166616448417,
+              "y": 0.7295745977593255,
+              "pixels": 122
+            },
+            {
+              "id": "rock_7",
+              "x": 0.49616689559384985,
+              "y": 0.7156134070296231,
+              "pixels": 78
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_0",
+              2
+            ],
+            [
+              "rock_8",
+              3
+            ],
+            [
+              "rock_9",
+              3
+            ],
+            [
+              "rock_10",
+              3
+            ],
+            [
+              "rock_4",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "host-laptop-1366x768.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 1366,
+            "innerHeight": 768
+          },
+          "scene": {
+            "x": 191.234375,
+            "y": 99.1875,
+            "width": 956.21875,
+            "height": 601.3125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 1366,
+              "height": 768,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "768px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 1366,
+              "height": 768,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "768px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 1366,
+              "height": 668.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "668.812px",
+              "gridRows": "668.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 191.234375,
+              "y": 99.1875,
+              "width": 956.21875,
+              "height": 668.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "668.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 191.234375,
+              "y": 700.5,
+              "width": 956.21875,
+              "height": 67.5,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "67.5px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 191.234375,
+            "y": 99.1875,
+            "width": 956.21875,
+            "height": 601.3125,
+            "cssWidth": "956.219px",
+            "cssHeight": "601.312px",
+            "bufferWidth": 956,
+            "bufferHeight": 601,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 956.21875,
+            "height": 601.3125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 411.1740625,
+            "y": 312.6825
+          },
+          "shipBrightSamplePixels": 900,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_0",
+              "x": 0.12767680529382627,
+              "y": 0.4303048215268414,
+              "pixels": 158
+            },
+            {
+              "id": "rock_8",
+              "x": 0.6614970793831844,
+              "y": 0.5365466112661499,
+              "pixels": 43
+            },
+            {
+              "id": "rock_9",
+              "x": 0.8214812935136101,
+              "y": 0.1687225583417086,
+              "pixels": 145
+            },
+            {
+              "id": "rock_10",
+              "x": 0.8684430325807675,
+              "y": 0.26128018145415755,
+              "pixels": 68
+            },
+            {
+              "id": "rock_4",
+              "x": 0.14082651389430417,
+              "y": 0.6318588261844662,
+              "pixels": 75
+            },
+            {
+              "id": "rock_5",
+              "x": 0.5603388570847435,
+              "y": 0.8588348821033883,
+              "pixels": 91
+            },
+            {
+              "id": "rock_6",
+              "x": 0.292716945885386,
+              "y": 0.7217034358678112,
+              "pixels": 134
+            },
+            {
+              "id": "rock_7",
+              "x": 0.40810338330797646,
+              "y": 0.719266851746578,
+              "pixels": 75
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_0",
+              2
+            ],
+            [
+              "rock_8",
+              3
+            ],
+            [
+              "rock_9",
+              3
+            ],
+            [
+              "rock_10",
+              3
+            ],
+            [
+              "rock_4",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "guest-laptop-1366x768.png"
+        }
+      }
+    },
+    {
+      "profile": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 1920,
+            "innerHeight": 1080
+          },
+          "scene": {
+            "x": 268.796875,
+            "y": 99.1875,
+            "width": 1344.015625,
+            "height": 913.3125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1080px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1080px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 1920,
+              "height": 980.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "980.812px",
+              "gridRows": "980.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 268.796875,
+              "y": 99.1875,
+              "width": 1344.015625,
+              "height": 980.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "980.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 268.796875,
+              "y": 1012.5,
+              "width": 1344.015625,
+              "height": 67.5,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "67.5px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 268.796875,
+            "y": 99.1875,
+            "width": 1344.015625,
+            "height": 913.3125,
+            "cssWidth": "1344.02px",
+            "cssHeight": "913.312px",
+            "bufferWidth": 1344,
+            "bufferHeight": 913,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 1344.015625,
+            "height": 913.3125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 577.92671875,
+            "y": 474.9225
+          },
+          "shipBrightSamplePixels": 1959,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_0",
+              "x": 0.004011217345750023,
+              "y": 0.4415219353974475,
+              "pixels": 252
+            },
+            {
+              "id": "rock_8",
+              "x": 0.5243575586836073,
+              "y": 0.5190919046170411,
+              "pixels": 87
+            },
+            {
+              "id": "rock_9",
+              "x": 0.71262083179786,
+              "y": 0.16425595277915525,
+              "pixels": 341
+            },
+            {
+              "id": "rock_10",
+              "x": 0.7367985510452097,
+              "y": 0.2806285231828343,
+              "pixels": 152
+            },
+            {
+              "id": "rock_4",
+              "x": -0.030810656630919586,
+              "y": 0.6356530706869442,
+              "pixels": 0
+            },
+            {
+              "id": "rock_5",
+              "x": 0.46406090246501985,
+              "y": 0.877164407760091,
+              "pixels": 206
+            },
+            {
+              "id": "rock_6",
+              "x": 0.13304088379290016,
+              "y": 0.7077826292125515,
+              "pixels": 277
+            },
+            {
+              "id": "rock_7",
+              "x": 0.25235571291178294,
+              "y": 0.7257282736092412,
+              "pixels": 158
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_0",
+              2
+            ],
+            [
+              "rock_8",
+              3
+            ],
+            [
+              "rock_9",
+              3
+            ],
+            [
+              "rock_10",
+              3
+            ],
+            [
+              "rock_4",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "host-desktop-1920x1080.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 1920,
+            "innerHeight": 1080
+          },
+          "scene": {
+            "x": 268.796875,
+            "y": 99.1875,
+            "width": 1344.015625,
+            "height": 913.3125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1080px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1080px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 1920,
+              "height": 980.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "980.812px",
+              "gridRows": "980.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 268.796875,
+              "y": 99.1875,
+              "width": 1344.015625,
+              "height": 980.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "980.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 268.796875,
+              "y": 1012.5,
+              "width": 1344.015625,
+              "height": 67.5,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "67.5px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 268.796875,
+            "y": 99.1875,
+            "width": 1344.015625,
+            "height": 913.3125,
+            "cssWidth": "1344.02px",
+            "cssHeight": "913.312px",
+            "bufferWidth": 1344,
+            "bufferHeight": 913,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 1344.015625,
+            "height": 913.3125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 577.92671875,
+            "y": 474.9225
+          },
+          "shipBrightSamplePixels": 2035,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_0",
+              "x": -0.12838724897203635,
+              "y": 0.45353116688716294,
+              "pixels": 0
+            },
+            {
+              "id": "rock_8",
+              "x": 0.3873268788734754,
+              "y": 0.5016510509097158,
+              "pixels": 107
+            },
+            {
+              "id": "rock_9",
+              "x": 0.5987493329555141,
+              "y": 0.15958374156372168,
+              "pixels": 340
+            },
+            {
+              "id": "rock_10",
+              "x": 0.5989897644218737,
+              "y": 0.3008828586908699,
+              "pixels": 166
+            },
+            {
+              "id": "rock_4",
+              "x": -0.21020620837734666,
+              "y": 0.6396188234659043,
+              "pixels": 0
+            },
+            {
+              "id": "rock_5",
+              "x": 0.36343097051514306,
+              "y": 0.8963224686764543,
+              "pixels": 202
+            },
+            {
+              "id": "rock_6",
+              "x": -0.03385289086046778,
+              "y": 0.6932325711858827,
+              "pixels": 0
+            },
+            {
+              "id": "rock_7",
+              "x": 0.08956790198221565,
+              "y": 0.732481766087427,
+              "pixels": 158
+            }
+          ],
+          "visibleAsteroidSamples": 6,
+          "asteroidHealth": [
+            [
+              "rock_0",
+              2
+            ],
+            [
+              "rock_8",
+              3
+            ],
+            [
+              "rock_9",
+              3
+            ],
+            [
+              "rock_10",
+              3
+            ],
+            [
+              "rock_4",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "guest-desktop-1920x1080.png"
+        }
+      }
+    },
+    {
+      "profile": "ultrawide",
+      "width": 2560,
+      "height": 1440,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 2560,
+            "innerHeight": 1440
+          },
+          "scene": {
+            "x": 358.390625,
+            "y": 99.1875,
+            "width": 1792.015625,
+            "height": 1273.3125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 2560,
+              "height": 1440,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1440px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 2560,
+              "height": 1440,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1440px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 2560,
+              "height": 1340.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1340.81px",
+              "gridRows": "1340.81px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 358.390625,
+              "y": 99.1875,
+              "width": 1792.015625,
+              "height": 1340.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1340.81px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 358.390625,
+              "y": 1372.5,
+              "width": 1792.015625,
+              "height": 67.5,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "67.5px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 358.390625,
+            "y": 99.1875,
+            "width": 1792.015625,
+            "height": 1273.3125,
+            "cssWidth": "1792.02px",
+            "cssHeight": "1273.31px",
+            "bufferWidth": 1792,
+            "bufferHeight": 1273,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 1792.015625,
+            "height": 1273.3125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 770.56671875,
+            "y": 662.1225000000001
+          },
+          "shipBrightSamplePixels": 3861,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_13",
+              "x": 0.9002897814961413,
+              "y": 0.5245481995345853,
+              "pixels": 500
+            },
+            {
+              "id": "rock_11",
+              "x": 0.6928122241132163,
+              "y": 0.21271268276245836,
+              "pixels": 625
+            },
+            {
+              "id": "rock_9",
+              "x": 0.44098806065951535,
+              "y": 0.15311070842306876,
+              "pixels": 670
+            },
+            {
+              "id": "rock_10",
+              "x": 0.40831422568981485,
+              "y": 0.32890724254391485,
+              "pixels": 347
+            },
+            {
+              "id": "rock_12",
+              "x": 0.7118678164672889,
+              "y": 0.6946586612963096,
+              "pixels": 244
+            },
+            {
+              "id": "rock_5",
+              "x": 0.2240913454707376,
+              "y": 0.9228501326919027,
+              "pixels": 395
+            },
+            {
+              "id": "rock_6",
+              "x": -0.2649463193448357,
+              "y": 0.6730854878029757,
+              "pixels": 0
+            },
+            {
+              "id": "rock_7",
+              "x": -0.13584010632314011,
+              "y": 0.7418331498299816,
+              "pixels": 0
+            }
+          ],
+          "visibleAsteroidSamples": 6,
+          "asteroidHealth": [
+            [
+              "rock_13",
+              3
+            ],
+            [
+              "rock_11",
+              3
+            ],
+            [
+              "rock_9",
+              3
+            ],
+            [
+              "rock_10",
+              3
+            ],
+            [
+              "rock_12",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_6",
+              3
+            ],
+            [
+              "rock_7",
+              3
+            ]
+          ],
+          "screenshot": "host-ultrawide-2560x1440.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 2560,
+            "innerHeight": 1440
+          },
+          "scene": {
+            "x": 358.390625,
+            "y": 99.1875,
+            "width": 1792.015625,
+            "height": 1273.3125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 2560,
+              "height": 1440,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1440px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 2560,
+              "height": 1440,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1440px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 2560,
+              "height": 1340.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1340.81px",
+              "gridRows": "1340.81px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 358.390625,
+              "y": 99.1875,
+              "width": 1792.015625,
+              "height": 1340.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1340.81px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 358.390625,
+              "y": 1372.5,
+              "width": 1792.015625,
+              "height": 67.5,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "67.5px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 358.390625,
+            "y": 99.1875,
+            "width": 1792.015625,
+            "height": 1273.3125,
+            "cssWidth": "1792.02px",
+            "cssHeight": "1273.31px",
+            "bufferWidth": 1792,
+            "bufferHeight": 1273,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 1792.015625,
+            "height": 1273.3125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 770.56671875,
+            "y": 662.1225000000001
+          },
+          "shipBrightSamplePixels": 3861,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_13",
+              "x": 0.6889432747876302,
+              "y": 0.5634914313253329,
+              "pixels": 966
+            },
+            {
+              "id": "rock_11",
+              "x": 0.3362103569867508,
+              "y": 0.22819418277777784,
+              "pixels": 504
+            },
+            {
+              "id": "rock_9",
+              "x": 0.20650608201146742,
+              "y": 0.14348978183832992,
+              "pixels": 621
+            },
+            {
+              "id": "rock_10",
+              "x": 0.12475619165211121,
+              "y": 0.3705829563944152,
+              "pixels": 290
+            },
+            {
+              "id": "rock_12",
+              "x": 0.35316473009626737,
+              "y": 0.673164652919889,
+              "pixels": 133
+            },
+            {
+              "id": "rock_5",
+              "x": 0.016876144171823704,
+              "y": 0.962300039616796,
+              "pixels": 402
+            },
+            {
+              "id": "rock_14",
+              "x": 0.6777211067855982,
+              "y": 0.5890579271732116,
+              "pixels": 1187
+            },
+            {
+              "id": "rock_15",
+              "x": 0.6462722689327477,
+              "y": 0.5535089027069239,
+              "pixels": 364
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_13",
+              3
+            ],
+            [
+              "rock_11",
+              3
+            ],
+            [
+              "rock_9",
+              3
+            ],
+            [
+              "rock_10",
+              3
+            ],
+            [
+              "rock_12",
+              3
+            ],
+            [
+              "rock_5",
+              3
+            ],
+            [
+              "rock_14",
+              3
+            ],
+            [
+              "rock_15",
+              3
+            ]
+          ],
+          "screenshot": "guest-ultrawide-2560x1440.png"
+        }
+      }
+    },
+    {
+      "profile": "ultrawide",
+      "width": 2560,
+      "height": 1440,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 2560,
+            "innerHeight": 1440
+          },
+          "scene": {
+            "x": 358.390625,
+            "y": 99.1875,
+            "width": 1792.015625,
+            "height": 1208.21875
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 2560,
+              "height": 1440,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1440px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 2560,
+              "height": 1440,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1440px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 2560,
+              "height": 1340.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1340.81px",
+              "gridRows": "1340.81px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 358.390625,
+              "y": 99.1875,
+              "width": 1792.015625,
+              "height": 1340.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1340.81px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 358.390625,
+              "y": 1307.40625,
+              "width": 1792.015625,
+              "height": 132.59375,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "132.594px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 358.390625,
+            "y": 99.1875,
+            "width": 1792.015625,
+            "height": 1208.21875,
+            "cssWidth": "1792.02px",
+            "cssHeight": "1208.22px",
+            "bufferWidth": 1792,
+            "bufferHeight": 1208,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 1792.015625,
+            "height": 1208.21875,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 770.56671875,
+            "y": 628.2737500000001
+          },
+          "shipBrightSamplePixels": 3999,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_13",
+              "x": 0.4377047078760474,
+              "y": 0.6097852731228137,
+              "pixels": 928
+            },
+            {
+              "id": "rock_11",
+              "x": -0.06756176448695318,
+              "y": 0.24572353043697992,
+              "pixels": 0
+            },
+            {
+              "id": "rock_9",
+              "x": -0.05899248850638551,
+              "y": 0.13259622716076808,
+              "pixels": 0
+            },
+            {
+              "id": "rock_10",
+              "x": -0.19631007164850137,
+              "y": 0.41777141205491214,
+              "pixels": 0
+            },
+            {
+              "id": "rock_12",
+              "x": -0.05298655377187819,
+              "y": 0.6488274798392923,
+              "pixels": 0
+            },
+            {
+              "id": "rock_17",
+              "x": 0.9272482907048895,
+              "y": 0.49097408298121215,
+              "pixels": 219
+            },
+            {
+              "id": "rock_14",
+              "x": 0.37549115773730257,
+              "y": 0.564881973679189,
+              "pixels": 578
+            },
+            {
+              "id": "rock_16",
+              "x": 0.8245568450403954,
+              "y": 0.3614198549043971,
+              "pixels": 163
+            }
+          ],
+          "visibleAsteroidSamples": 7,
+          "asteroidHealth": [
+            [
+              "rock_13",
+              3
+            ],
+            [
+              "rock_11",
+              3
+            ],
+            [
+              "rock_9",
+              3
+            ],
+            [
+              "rock_10",
+              3
+            ],
+            [
+              "rock_12",
+              3
+            ],
+            [
+              "rock_17",
+              3
+            ],
+            [
+              "rock_14",
+              3
+            ],
+            [
+              "rock_16",
+              3
+            ]
+          ],
+          "screenshot": "host-ultrawide-2560x1440.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 2560,
+            "innerHeight": 1440
+          },
+          "scene": {
+            "x": 358.390625,
+            "y": 99.1875,
+            "width": 1792.015625,
+            "height": 1208.21875
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 2560,
+              "height": 1440,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1440px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 2560,
+              "height": 1440,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1440px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 2560,
+              "height": 1340.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1340.81px",
+              "gridRows": "1340.81px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 358.390625,
+              "y": 99.1875,
+              "width": 1792.015625,
+              "height": 1340.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1340.81px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 358.390625,
+              "y": 1307.40625,
+              "width": 1792.015625,
+              "height": 132.59375,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "132.594px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 358.390625,
+            "y": 99.1875,
+            "width": 1792.015625,
+            "height": 1208.21875,
+            "cssWidth": "1792.02px",
+            "cssHeight": "1208.22px",
+            "bufferWidth": 1792,
+            "bufferHeight": 1208,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 1792.015625,
+            "height": 1208.21875,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 770.56671875,
+            "y": 628.2737500000001
+          },
+          "shipBrightSamplePixels": 3455,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_13",
+              "x": 0.24768824152101462,
+              "y": 0.6447981787467023,
+              "pixels": 448
+            },
+            {
+              "id": "rock_20",
+              "x": 0.8656229350773239,
+              "y": 0.8886577908117416,
+              "pixels": 385
+            },
+            {
+              "id": "rock_22",
+              "x": 0.9319138449104512,
+              "y": 0.5059139077593869,
+              "pixels": 363
+            },
+            {
+              "id": "rock_19",
+              "x": 0.717750840493793,
+              "y": 0.7886636652789498,
+              "pixels": 165
+            },
+            {
+              "id": "rock_21",
+              "x": 0.8198486656194247,
+              "y": 0.19347647716672056,
+              "pixels": 367
+            },
+            {
+              "id": "rock_17",
+              "x": 0.7196954068083461,
+              "y": 0.4730793144643705,
+              "pixels": 206
+            },
+            {
+              "id": "rock_18",
+              "x": 0.6189541555137008,
+              "y": 0.37976419658763094,
+              "pixels": 336
+            },
+            {
+              "id": "rock_16",
+              "x": 0.5292982382800415,
+              "y": 0.36280779875270547,
+              "pixels": 136
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_13",
+              3
+            ],
+            [
+              "rock_20",
+              3
+            ],
+            [
+              "rock_22",
+              3
+            ],
+            [
+              "rock_19",
+              3
+            ],
+            [
+              "rock_21",
+              3
+            ],
+            [
+              "rock_17",
+              3
+            ],
+            [
+              "rock_18",
+              3
+            ],
+            [
+              "rock_16",
+              3
+            ]
+          ],
+          "screenshot": "guest-ultrawide-2560x1440.png"
+        }
+      }
+    },
+    {
+      "profile": "desktop",
+      "width": 1920,
+      "height": 1080,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 1920,
+            "innerHeight": 1080
+          },
+          "scene": {
+            "x": 268.796875,
+            "y": 99.1875,
+            "width": 1344.015625,
+            "height": 848.21875
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1080px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1080px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 1920,
+              "height": 980.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "980.812px",
+              "gridRows": "980.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 268.796875,
+              "y": 99.1875,
+              "width": 1344.015625,
+              "height": 980.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "980.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 268.796875,
+              "y": 947.40625,
+              "width": 1344.015625,
+              "height": 132.59375,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "132.594px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 268.796875,
+            "y": 99.1875,
+            "width": 1344.015625,
+            "height": 848.21875,
+            "cssWidth": "1344.02px",
+            "cssHeight": "848.219px",
+            "bufferWidth": 1344,
+            "bufferHeight": 848,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 1344.015625,
+            "height": 848.21875,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 577.92671875,
+            "y": 441.07375
+          },
+          "shipBrightSamplePixels": 1714,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_13",
+              "x": 0.04399449738207206,
+              "y": 0.6823312935157522,
+              "pixels": 220
+            },
+            {
+              "id": "rock_20",
+              "x": 0.6285227108674412,
+              "y": 0.9076125008854725,
+              "pixels": 204
+            },
+            {
+              "id": "rock_22",
+              "x": 0.7515917186757591,
+              "y": 0.5019110836792252,
+              "pixels": 195
+            },
+            {
+              "id": "rock_19",
+              "x": 0.4669798412259194,
+              "y": 0.8214337314843371,
+              "pixels": 143
+            },
+            {
+              "id": "rock_21",
+              "x": 0.5337550082971069,
+              "y": 0.19227708561180254,
+              "pixels": 225
+            },
+            {
+              "id": "rock_17",
+              "x": 0.5085136665195804,
+              "y": 0.4548716736621606,
+              "pixels": 131
+            },
+            {
+              "id": "rock_18",
+              "x": 0.301271789807276,
+              "y": 0.3953169690220011,
+              "pixels": 242
+            },
+            {
+              "id": "rock_16",
+              "x": 0.22913124035870852,
+              "y": 0.3642188158363444,
+              "pixels": 134
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_13",
+              3
+            ],
+            [
+              "rock_20",
+              3
+            ],
+            [
+              "rock_22",
+              3
+            ],
+            [
+              "rock_19",
+              3
+            ],
+            [
+              "rock_21",
+              3
+            ],
+            [
+              "rock_17",
+              3
+            ],
+            [
+              "rock_18",
+              3
+            ],
+            [
+              "rock_16",
+              3
+            ]
+          ],
+          "screenshot": "host-desktop-1920x1080.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 1920,
+            "innerHeight": 1080
+          },
+          "scene": {
+            "x": 268.796875,
+            "y": 99.1875,
+            "width": 1344.015625,
+            "height": 848.21875
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1080px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1080px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 1920,
+              "height": 980.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "980.812px",
+              "gridRows": "980.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 268.796875,
+              "y": 99.1875,
+              "width": 1344.015625,
+              "height": 980.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "980.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 268.796875,
+              "y": 947.40625,
+              "width": 1344.015625,
+              "height": 132.59375,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "132.594px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 268.796875,
+            "y": 99.1875,
+            "width": 1344.015625,
+            "height": 848.21875,
+            "cssWidth": "1344.02px",
+            "cssHeight": "848.219px",
+            "bufferWidth": 1344,
+            "bufferHeight": 848,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 1344.015625,
+            "height": 848.21875,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 577.92671875,
+            "y": 441.07375
+          },
+          "shipBrightSamplePixels": 1713,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_13",
+              "x": -0.10832804269944743,
+              "y": 0.710398622745526,
+              "pixels": 0
+            },
+            {
+              "id": "rock_20",
+              "x": 0.4425987714304352,
+              "y": 0.9224759805786612,
+              "pixels": 204
+            },
+            {
+              "id": "rock_22",
+              "x": 0.6061097014914442,
+              "y": 0.4986816468165642,
+              "pixels": 186
+            },
+            {
+              "id": "rock_19",
+              "x": 0.26466040552153647,
+              "y": 0.8478722802879278,
+              "pixels": 142
+            },
+            {
+              "id": "rock_21",
+              "x": 0.3029376192168643,
+              "y": 0.19130942897172898,
+              "pixels": 198
+            },
+            {
+              "id": "rock_17",
+              "x": 0.3381344334701792,
+              "y": 0.4401819383125136,
+              "pixels": 129
+            },
+            {
+              "id": "rock_18",
+              "x": 0.044968959134657274,
+              "y": 0.407864784167082,
+              "pixels": 233
+            },
+            {
+              "id": "rock_16",
+              "x": -0.013141913099809468,
+              "y": 0.3653576870673742,
+              "pixels": 39
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_13",
+              3
+            ],
+            [
+              "rock_20",
+              3
+            ],
+            [
+              "rock_22",
+              3
+            ],
+            [
+              "rock_19",
+              3
+            ],
+            [
+              "rock_21",
+              3
+            ],
+            [
+              "rock_17",
+              3
+            ],
+            [
+              "rock_18",
+              3
+            ],
+            [
+              "rock_16",
+              3
+            ]
+          ],
+          "screenshot": "guest-desktop-1920x1080.png"
+        }
+      }
+    },
+    {
+      "profile": "laptop",
+      "width": 1366,
+      "height": 768,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 1366,
+            "innerHeight": 768
+          },
+          "scene": {
+            "x": 191.234375,
+            "y": 99.1875,
+            "width": 956.21875,
+            "height": 536.21875
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 1366,
+              "height": 768,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "768px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 1366,
+              "height": 768,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "768px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 1366,
+              "height": 668.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "668.812px",
+              "gridRows": "668.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 191.234375,
+              "y": 99.1875,
+              "width": 956.21875,
+              "height": 668.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "668.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 191.234375,
+              "y": 635.40625,
+              "width": 956.21875,
+              "height": 132.59375,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "132.594px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 191.234375,
+            "y": 99.1875,
+            "width": 956.21875,
+            "height": 536.21875,
+            "cssWidth": "956.219px",
+            "cssHeight": "536.219px",
+            "bufferWidth": 956,
+            "bufferHeight": 536,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 956.21875,
+            "height": 536.21875,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 411.1740625,
+            "y": 278.83375
+          },
+          "shipBrightSamplePixels": 780,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_23",
+              "x": 0.8114165071519986,
+              "y": 0.24192479413793808,
+              "pixels": 54
+            },
+            {
+              "id": "rock_20",
+              "x": 0.259059746235274,
+              "y": 0.9371488009919813,
+              "pixels": 84
+            },
+            {
+              "id": "rock_22",
+              "x": 0.47060359405690977,
+              "y": 0.49567365705305755,
+              "pixels": 92
+            },
+            {
+              "id": "rock_19",
+              "x": 0.07621430255116793,
+              "y": 0.8724979000307009,
+              "pixels": 55
+            },
+            {
+              "id": "rock_21",
+              "x": 0.08794770824498128,
+              "y": 0.19040812592983183,
+              "pixels": 87
+            },
+            {
+              "id": "rock_17",
+              "x": 0.17943834782987741,
+              "y": 0.4264994991011295,
+              "pixels": 53
+            },
+            {
+              "id": "rock_18",
+              "x": -0.19375882029183938,
+              "y": 0.41955217770221453,
+              "pixels": 0
+            },
+            {
+              "id": "rock_24",
+              "x": 0.9558214360778334,
+              "y": 0.24562383891607983,
+              "pixels": 121
+            }
+          ],
+          "visibleAsteroidSamples": 7,
+          "asteroidHealth": [
+            [
+              "rock_23",
+              3
+            ],
+            [
+              "rock_20",
+              3
+            ],
+            [
+              "rock_22",
+              3
+            ],
+            [
+              "rock_19",
+              3
+            ],
+            [
+              "rock_21",
+              3
+            ],
+            [
+              "rock_17",
+              3
+            ],
+            [
+              "rock_18",
+              3
+            ],
+            [
+              "rock_24",
+              3
+            ]
+          ],
+          "screenshot": "host-laptop-1366x768.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 1366,
+            "innerHeight": 768
+          },
+          "scene": {
+            "x": 191.234375,
+            "y": 99.1875,
+            "width": 956.21875,
+            "height": 536.21875
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 1366,
+              "height": 768,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "768px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 1366,
+              "height": 768,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "768px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 1366,
+              "height": 668.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "668.812px",
+              "gridRows": "668.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 191.234375,
+              "y": 99.1875,
+              "width": 956.21875,
+              "height": 668.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "668.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 191.234375,
+              "y": 635.40625,
+              "width": 956.21875,
+              "height": 132.59375,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "132.594px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 191.234375,
+            "y": 99.1875,
+            "width": 956.21875,
+            "height": 536.21875,
+            "cssWidth": "956.219px",
+            "cssHeight": "536.219px",
+            "bufferWidth": 956,
+            "bufferHeight": 536,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 956.21875,
+            "height": 536.21875,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 411.1740625,
+            "y": 278.83375
+          },
+          "shipBrightSamplePixels": 714,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_23",
+              "x": 0.7154521875863135,
+              "y": 0.24827247515259807,
+              "pixels": 55
+            },
+            {
+              "id": "rock_20",
+              "x": 0.18641923328580812,
+              "y": 0.9429559648913511,
+              "pixels": 80
+            },
+            {
+              "id": "rock_22",
+              "x": 0.41528263998993825,
+              "y": 0.494445632230477,
+              "pixels": 104
+            },
+            {
+              "id": "rock_19",
+              "x": -0.0007196335192779235,
+              "y": 0.8825514157315991,
+              "pixels": 43
+            },
+            {
+              "id": "rock_21",
+              "x": 0.0001771478258967285,
+              "y": 0.1900401650672167,
+              "pixels": 87
+            },
+            {
+              "id": "rock_17",
+              "x": 0.11464998492485759,
+              "y": 0.4209135841525888,
+              "pixels": 56
+            },
+            {
+              "id": "rock_25",
+              "x": 0.9003249906361589,
+              "y": 0.1254018843581006,
+              "pixels": 87
+            },
+            {
+              "id": "rock_24",
+              "x": 0.8845120865232144,
+              "y": 0.2474139271063811,
+              "pixels": 113
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_23",
+              3
+            ],
+            [
+              "rock_20",
+              3
+            ],
+            [
+              "rock_22",
+              3
+            ],
+            [
+              "rock_19",
+              3
+            ],
+            [
+              "rock_21",
+              3
+            ],
+            [
+              "rock_17",
+              3
+            ],
+            [
+              "rock_25",
+              3
+            ],
+            [
+              "rock_24",
+              3
+            ]
+          ],
+          "screenshot": "guest-laptop-1366x768.png"
+        }
+      }
+    },
+    {
+      "profile": "tablet",
+      "width": 768,
+      "height": 1024,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 768,
+            "innerHeight": 1024
+          },
+          "scene": {
+            "x": 184.3125,
+            "y": 99.1875,
+            "width": 376.328125,
+            "height": 792.21875
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 768,
+              "height": 1024,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1024px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 768,
+              "height": 1024,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1024px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 768,
+              "height": 924.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "924.812px",
+              "gridRows": "924.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 184.3125,
+              "y": 99.1875,
+              "width": 376.328125,
+              "height": 924.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "924.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 184.3125,
+              "y": 891.40625,
+              "width": 376.328125,
+              "height": 132.59375,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "132.594px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 184.3125,
+            "y": 99.1875,
+            "width": 376.328125,
+            "height": 792.21875,
+            "cssWidth": "376.328px",
+            "cssHeight": "792.219px",
+            "bufferWidth": 376,
+            "bufferHeight": 792,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 376.328125,
+            "height": 792.21875,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 161.82109375,
+            "y": 411.95375
+          },
+          "shipBrightSamplePixels": 345,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_23",
+              "x": 0.5511476568155965,
+              "y": 0.259140605675652,
+              "pixels": 29
+            },
+            {
+              "id": "rock_20",
+              "x": 0.06250306413671894,
+              "y": 0.9528623033079232,
+              "pixels": 39
+            },
+            {
+              "id": "rock_26",
+              "x": 0.8869189400561832,
+              "y": 0.5866229165221469,
+              "pixels": 34
+            },
+            {
+              "id": "rock_19",
+              "x": -0.1316754864479331,
+              "y": 0.8996643673208322,
+              "pixels": 0
+            },
+            {
+              "id": "rock_21",
+              "x": -0.14922465310604227,
+              "y": 0.18941382731473275,
+              "pixels": 0
+            },
+            {
+              "id": "rock_17",
+              "x": 0.004368154078334546,
+              "y": 0.4114053190899087,
+              "pixels": 25
+            },
+            {
+              "id": "rock_25",
+              "x": 0.7528523393910032,
+              "y": 0.11199569993299617,
+              "pixels": 40
+            },
+            {
+              "id": "rock_24",
+              "x": 0.763130324849641,
+              "y": 0.25046098979096504,
+              "pixels": 57
+            }
+          ],
+          "visibleAsteroidSamples": 6,
+          "asteroidHealth": [
+            [
+              "rock_23",
+              3
+            ],
+            [
+              "rock_20",
+              3
+            ],
+            [
+              "rock_26",
+              3
+            ],
+            [
+              "rock_19",
+              3
+            ],
+            [
+              "rock_21",
+              3
+            ],
+            [
+              "rock_17",
+              3
+            ],
+            [
+              "rock_25",
+              3
+            ],
+            [
+              "rock_24",
+              3
+            ]
+          ],
+          "screenshot": "host-tablet-768x1024.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 768,
+            "innerHeight": 1024
+          },
+          "scene": {
+            "x": 184.3125,
+            "y": 99.1875,
+            "width": 376.328125,
+            "height": 792.21875
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 768,
+              "height": 1024,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "1024px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 768,
+              "height": 1024,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "1024px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 99.1875,
+              "width": 768,
+              "height": 924.8125,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "924.812px",
+              "gridRows": "924.812px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 184.3125,
+              "y": 99.1875,
+              "width": 376.328125,
+              "height": 924.8125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "924.812px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 184.3125,
+              "y": 891.40625,
+              "width": 376.328125,
+              "height": 132.59375,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "132.594px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 184.3125,
+            "y": 99.1875,
+            "width": 376.328125,
+            "height": 792.21875,
+            "cssWidth": "376.328px",
+            "cssHeight": "792.219px",
+            "bufferWidth": 376,
+            "bufferHeight": 792,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 376.328125,
+            "height": 792.21875,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 161.82109375,
+            "y": 411.95375
+          },
+          "shipBrightSamplePixels": 345,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_23",
+              "x": 0.4906626423007988,
+              "y": 0.2631414632865292,
+              "pixels": 28
+            },
+            {
+              "id": "rock_20",
+              "x": 0.01848152208936829,
+              "y": 0.9563815558488543,
+              "pixels": 37
+            },
+            {
+              "id": "rock_26",
+              "x": 0.8512170659853509,
+              "y": 0.5871351458515213,
+              "pixels": 31
+            },
+            {
+              "id": "rock_19",
+              "x": -0.1782352319113314,
+              "y": 0.9057486671234247,
+              "pixels": 0
+            },
+            {
+              "id": "rock_21",
+              "x": -0.20234262887879423,
+              "y": 0.18919114061782213,
+              "pixels": 0
+            },
+            {
+              "id": "rock_17",
+              "x": -0.034841196696151544,
+              "y": 0.4080247722016525,
+              "pixels": 0
+            },
+            {
+              "id": "rock_25",
+              "x": 0.7004202491007914,
+              "y": 0.10722929567912658,
+              "pixels": 44
+            },
+            {
+              "id": "rock_24",
+              "x": 0.7199745299689085,
+              "y": 0.251544335512691,
+              "pixels": 58
+            }
+          ],
+          "visibleAsteroidSamples": 6,
+          "asteroidHealth": [
+            [
+              "rock_23",
+              3
+            ],
+            [
+              "rock_20",
+              3
+            ],
+            [
+              "rock_26",
+              3
+            ],
+            [
+              "rock_19",
+              3
+            ],
+            [
+              "rock_21",
+              3
+            ],
+            [
+              "rock_17",
+              3
+            ],
+            [
+              "rock_25",
+              3
+            ],
+            [
+              "rock_24",
+              3
+            ]
+          ],
+          "screenshot": "guest-tablet-768x1024.png"
+        }
+      }
+    },
+    {
+      "profile": "mobile",
+      "width": 390,
+      "height": 844,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 390,
+            "innerHeight": 844
+          },
+          "scene": {
+            "x": 0,
+            "y": 236.6875,
+            "width": 390,
+            "height": 239.328125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "844px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "844px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 729.109375,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "729.109px",
+              "gridRows": "361.125px 162.984px 205px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 361.125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "361.125px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 121.796875,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "121.797px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 0,
+            "y": 236.6875,
+            "width": 390,
+            "height": 239.328125,
+            "cssWidth": "390px",
+            "cssHeight": "239.328px",
+            "bufferWidth": 390,
+            "bufferHeight": 239,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 390,
+            "height": 239.328125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 167.7,
+            "y": 124.450625
+          },
+          "shipBrightSamplePixels": 134,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_23",
+              "x": 0.33604618744803655,
+              "y": 0.27336876380264663,
+              "pixels": 13
+            },
+            {
+              "id": "rock_30",
+              "x": 1.0661884546979854,
+              "y": 0.410066498669039,
+              "pixels": 0
+            },
+            {
+              "id": "rock_26",
+              "x": 0.7555553853486092,
+              "y": 0.588507642948512,
+              "pixels": 12
+            },
+            {
+              "id": "rock_28",
+              "x": 0.8626836698843794,
+              "y": 0.6595925687594821,
+              "pixels": 11
+            },
+            {
+              "id": "rock_27",
+              "x": 0.7913257151744074,
+              "y": 0.5827870472952336,
+              "pixels": 26
+            },
+            {
+              "id": "rock_29",
+              "x": 0.9991797874808925,
+              "y": 0.37798088248651973,
+              "pixels": 3
+            },
+            {
+              "id": "rock_25",
+              "x": 0.5599306527701334,
+              "y": 0.09445791452936779,
+              "pixels": 16
+            },
+            {
+              "id": "rock_24",
+              "x": 0.6043403798031526,
+              "y": 0.2544471151327565,
+              "pixels": 20
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_23",
+              3
+            ],
+            [
+              "rock_30",
+              3
+            ],
+            [
+              "rock_26",
+              3
+            ],
+            [
+              "rock_28",
+              3
+            ],
+            [
+              "rock_27",
+              3
+            ],
+            [
+              "rock_29",
+              3
+            ],
+            [
+              "rock_25",
+              3
+            ],
+            [
+              "rock_24",
+              3
+            ]
+          ],
+          "screenshot": "host-mobile-390x844.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 390,
+            "innerHeight": 844
+          },
+          "scene": {
+            "x": 0,
+            "y": 236.6875,
+            "width": 390,
+            "height": 239.328125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "844px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 390,
+              "height": 844,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "844px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 729.109375,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "729.109px",
+              "gridRows": "361.125px 162.984px 205px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 361.125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "361.125px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 390,
+              "height": 121.796875,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "121.797px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 0,
+            "y": 236.6875,
+            "width": 390,
+            "height": 239.328125,
+            "cssWidth": "390px",
+            "cssHeight": "239.328px",
+            "bufferWidth": 390,
+            "bufferHeight": 239,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 390,
+            "height": 239.328125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 167.7,
+            "y": 124.450625
+          },
+          "shipBrightSamplePixels": 134,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_23",
+              "x": 0.3030543613490563,
+              "y": 0.27555104977221617,
+              "pixels": 12
+            },
+            {
+              "id": "rock_30",
+              "x": 1.03677120256599,
+              "y": 0.4098598840096034,
+              "pixels": 0
+            },
+            {
+              "id": "rock_26",
+              "x": 0.7351658274706847,
+              "y": 0.5888001802404571,
+              "pixels": 9
+            },
+            {
+              "id": "rock_28",
+              "x": 0.8364867499309007,
+              "y": 0.6637175671024136,
+              "pixels": 11
+            },
+            {
+              "id": "rock_27",
+              "x": 0.7572955624425332,
+              "y": 0.5864075798979261,
+              "pixels": 38
+            },
+            {
+              "id": "rock_29",
+              "x": 0.9672845666085286,
+              "y": 0.3775284818130364,
+              "pixels": 16
+            },
+            {
+              "id": "rock_25",
+              "x": 0.529986366441863,
+              "y": 0.09173579200966352,
+              "pixels": 16
+            },
+            {
+              "id": "rock_24",
+              "x": 0.5796938423204768,
+              "y": 0.2550658204772186,
+              "pixels": 22
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_23",
+              3
+            ],
+            [
+              "rock_30",
+              3
+            ],
+            [
+              "rock_26",
+              3
+            ],
+            [
+              "rock_28",
+              3
+            ],
+            [
+              "rock_27",
+              3
+            ],
+            [
+              "rock_29",
+              3
+            ],
+            [
+              "rock_25",
+              3
+            ],
+            [
+              "rock_24",
+              3
+            ]
+          ],
+          "screenshot": "guest-mobile-390x844.png"
+        }
+      }
+    },
+    {
+      "profile": "small-mobile",
+      "width": 360,
+      "height": 800,
+      "resizedWithoutReload": true,
+      "clients": {
+        "host": {
+          "viewport": {
+            "innerWidth": 360,
+            "innerHeight": 800
+          },
+          "scene": {
+            "x": 0,
+            "y": 236.6875,
+            "width": 360,
+            "height": 195.328125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 360,
+              "height": 800,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "800px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 360,
+              "height": 800,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "800px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 685.109375,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "685.109px",
+              "gridRows": "317.125px 162.984px 205px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 317.125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "317.125px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 121.796875,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "121.797px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 0,
+            "y": 236.6875,
+            "width": 360,
+            "height": 195.328125,
+            "cssWidth": "360px",
+            "cssHeight": "195.328px",
+            "bufferWidth": 360,
+            "bufferHeight": 195,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 360,
+            "height": 195.328125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "flight-scene",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "pilot",
+            "engineer"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 154.8,
+            "y": 101.570625
+          },
+          "shipBrightSamplePixels": 112,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_23",
+              "x": 0.2107558002388134,
+              "y": 0.281656254568035,
+              "pixels": 10
+            },
+            {
+              "id": "rock_30",
+              "x": 0.9543331323620993,
+              "y": 0.409280872967944,
+              "pixels": 15
+            },
+            {
+              "id": "rock_26",
+              "x": 0.6780267107297816,
+              "y": 0.5896199784222325,
+              "pixels": 23
+            },
+            {
+              "id": "rock_28",
+              "x": 0.7630732469782675,
+              "y": 0.6752773450673877,
+              "pixels": 11
+            },
+            {
+              "id": "rock_27",
+              "x": 0.661930430873763,
+              "y": 0.5965536574287906,
+              "pixels": 17
+            },
+            {
+              "id": "rock_29",
+              "x": 0.8779023073258958,
+              "y": 0.37626068704030974,
+              "pixels": 5
+            },
+            {
+              "id": "rock_25",
+              "x": 0.4460713506049325,
+              "y": 0.08410739332796258,
+              "pixels": 10
+            },
+            {
+              "id": "rock_24",
+              "x": 0.5106250870824651,
+              "y": 0.2567996627271142,
+              "pixels": 16
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_23",
+              3
+            ],
+            [
+              "rock_30",
+              3
+            ],
+            [
+              "rock_26",
+              3
+            ],
+            [
+              "rock_28",
+              3
+            ],
+            [
+              "rock_27",
+              3
+            ],
+            [
+              "rock_29",
+              3
+            ],
+            [
+              "rock_25",
+              3
+            ],
+            [
+              "rock_24",
+              3
+            ]
+          ],
+          "screenshot": "host-small-mobile-360x800.png"
+        },
+        "guest": {
+          "viewport": {
+            "innerWidth": 360,
+            "innerHeight": 800
+          },
+          "scene": {
+            "x": 0,
+            "y": 236.6875,
+            "width": 360,
+            "height": 195.328125
+          },
+          "parents": {
+            "screen": {
+              "x": 0,
+              "y": 0,
+              "width": 360,
+              "height": 800,
+              "display": "flex",
+              "position": "static",
+              "flex": "1 1 0%",
+              "minHeight": "0px",
+              "heightCss": "800px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "app": {
+              "x": 0,
+              "y": 0,
+              "width": 360,
+              "height": 800,
+              "display": "flex",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "800px",
+              "gridRows": "none",
+              "overflow": "visible"
+            },
+            "body": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 685.109375,
+              "display": "grid",
+              "position": "relative",
+              "flex": "1 1 auto",
+              "minHeight": "0px",
+              "heightCss": "685.109px",
+              "gridRows": "317.125px 162.984px 205px",
+              "overflow": "hidden"
+            },
+            "stage": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 317.125,
+              "display": "flex",
+              "position": "static",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "317.125px",
+              "gridRows": "none",
+              "overflow": "hidden"
+            },
+            "emergencies": {
+              "x": 0,
+              "y": 114.890625,
+              "width": 360,
+              "height": 121.796875,
+              "display": "block",
+              "position": "relative",
+              "flex": "0 1 auto",
+              "minHeight": "0px",
+              "heightCss": "121.797px",
+              "gridRows": "none",
+              "overflow": "hidden auto"
+            }
+          },
+          "canvas": {
+            "x": 0,
+            "y": 236.6875,
+            "width": 360,
+            "height": 195.328125,
+            "cssWidth": "360px",
+            "cssHeight": "195.328px",
+            "bufferWidth": 360,
+            "bufferHeight": 195,
+            "dpr": 1
+          },
+          "css": {
+            "display": "block",
+            "position": "absolute",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "clip",
+            "zIndex": "1"
+          },
+          "sceneCss": {
+            "display": "block",
+            "visibility": "visible",
+            "opacity": "1",
+            "overflow": "hidden"
+          },
+          "background": {
+            "width": 360,
+            "height": 195.328125,
+            "loaded": true,
+            "coversScene": true
+          },
+          "centerElement": "game-canvas",
+          "matchId": "3a9c0574-3f2c-4131-9c9f-1dd67a0b689d",
+          "phase": "playing",
+          "role": [
+            "navigator",
+            "gunner"
+          ],
+          "shipWorld": {
+            "x": 0.43,
+            "y": 0.52
+          },
+          "shipScreen": {
+            "x": 154.8,
+            "y": 101.570625
+          },
+          "shipBrightSamplePixels": 112,
+          "authoritativeAsteroidCount": 8,
+          "validAsteroidCount": 8,
+          "wayfarerSpriteLoaded": true,
+          "asteroidSamples": [
+            {
+              "id": "rock_23",
+              "x": 0.18548825088522938,
+              "y": 0.2833276085050466,
+              "pixels": 9
+            },
+            {
+              "id": "rock_30",
+              "x": 0.9317760299367747,
+              "y": 0.40912244117375224,
+              "pixels": 13
+            },
+            {
+              "id": "rock_26",
+              "x": 0.6623920299854442,
+              "y": 0.5898442955551864,
+              "pixels": 16
+            },
+            {
+              "id": "rock_28",
+              "x": 0.7429854901759952,
+              "y": 0.678440387275011,
+              "pixels": 10
+            },
+            {
+              "id": "rock_27",
+              "x": 0.6358361635615748,
+              "y": 0.5993298761043733,
+              "pixels": 17
+            },
+            {
+              "id": "rock_29",
+              "x": 0.8534451023881938,
+              "y": 0.37591378691914074,
+              "pixels": 5
+            },
+            {
+              "id": "rock_25",
+              "x": 0.4231101191911598,
+              "y": 0.08202007408360437,
+              "pixels": 11
+            },
+            {
+              "id": "rock_24",
+              "x": 0.49172616110760686,
+              "y": 0.2572740850070575,
+              "pixels": 15
+            }
+          ],
+          "visibleAsteroidSamples": 8,
+          "asteroidHealth": [
+            [
+              "rock_23",
+              3
+            ],
+            [
+              "rock_30",
+              3
+            ],
+            [
+              "rock_26",
+              3
+            ],
+            [
+              "rock_28",
+              3
+            ],
+            [
+              "rock_27",
+              3
+            ],
+            [
+              "rock_29",
+              3
+            ],
+            [
+              "rock_25",
+              3
+            ],
+            [
+              "rock_24",
+              3
+            ]
+          ],
+          "screenshot": "guest-small-mobile-360x800.png"
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "artifactDir": "C:\\Users\\visha\\OneDrive\\Desktop\\Survive Together\\test-artifacts\\phase17b-2026-10-29T21-51-33-761Z",
+  "background": {
+    "src": "/assets/wayfarer-gameplay-space.png",
+    "width": 1672,
+    "height": 941,
+    "loaded": true,
+    "active": true,
+    "sprite": {
+      "width": 1774,
+      "height": 887,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "opaquePixels": 760019,
+      "transparentCorners": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "sceneCoversScene": true,
+    "imageStyle": {
+      "position": "absolute",
+      "zIndex": "0",
+      "objectFit": "cover",
+      "pointerEvents": "none"
+    },
+    "canvasStyle": {
+      "zIndex": "1",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "canvasMatchesBackground": {
+      "width": true,
+      "height": true
+    }
+  },
+  "landing": {
+    "viewports": [
+      {
+        "profile": "small-mobile",
+        "viewport": {
+          "innerWidth": 360,
+          "innerHeight": 800
+        },
+        "imageLoaded": true,
+        "ship": {
+          "x": 24.116607666015625,
+          "y": 74.61674499511719,
+          "width": 306.52410888671875,
+          "height": 204.33900451660156,
+          "right": 330.6407165527344,
+          "bottom": 278.95574951171875
+        },
+        "stage": {
+          "x": 18,
+          "y": 74,
+          "width": 320,
+          "height": 250.78125,
+          "right": 338,
+          "bottom": 324.78125
+        },
+        "title": {
+          "x": 36,
+          "y": 354.8887939453125,
+          "width": 284,
+          "height": 99.40625,
+          "right": 320,
+          "bottom": 454.2950439453125
+        },
+        "mission": {
+          "x": 36,
+          "y": 469.2950439453125,
+          "width": 284,
+          "height": 182.921875,
+          "right": 320,
+          "bottom": 652.2169189453125
+        },
+        "actions": {
+          "x": 36,
+          "y": 667.2169189453125,
+          "width": 284,
+          "height": 96,
+          "right": 320,
+          "bottom": 763.2169189453125
+        },
+        "artworkBounds": {
+          "left": 19,
+          "top": 19,
+          "right": 1527,
+          "bottom": 942,
+          "width": 1536,
+          "height": 1024
+        },
+        "artworkRect": {
+          "left": 27.908247033754986,
+          "right": 328.84467685222626,
+          "top": 78.40819136798382,
+          "bottom": 262.59266516566277
+        },
+        "shipArtworkInsideStage": true,
+        "typographyAndActionsInsideViewport": true,
+        "copyAndActionsDoNotOverlap": true,
+        "horizontalOverflow": false,
+        "briefingBorder": "none",
+        "briefingBackground": "rgba(0, 0, 0, 0)",
+        "shipAnimation": "ship-reveal, ship-drift",
+        "shipTranslate": "none",
+        "shipRotate": "none",
+        "controls": {
+          "create": true,
+          "join": true,
+          "audio": true,
+          "skip": true
+        },
+        "screenshot": "landing-small-mobile-360x800.png"
+      },
+      {
+        "profile": "laptop",
+        "viewport": {
+          "innerWidth": 1366,
+          "innerHeight": 768
+        },
+        "imageLoaded": true,
+        "ship": {
+          "x": 90.16775512695312,
+          "y": 198.68710327148438,
+          "width": 619.59423828125,
+          "height": 414.1283264160156,
+          "right": 709.7619934082031,
+          "bottom": 612.8154296875
+        },
+        "stage": {
+          "x": 81.953125,
+          "y": 199.59375,
+          "width": 644.078125,
+          "height": 449.203125,
+          "right": 726.03125,
+          "bottom": 648.796875
+        },
+        "title": {
+          "x": 849.984375,
+          "y": 191.34375,
+          "width": 392.0625,
+          "height": 142.03125,
+          "right": 1242.046875,
+          "bottom": 333.375
+        },
+        "mission": {
+          "x": 849.984375,
+          "y": 356.40625,
+          "width": 392.0625,
+          "height": 181.578125,
+          "right": 1242.046875,
+          "bottom": 537.984375
+        },
+        "actions": {
+          "x": 849.984375,
+          "y": 561.015625,
+          "width": 392.0625,
+          "height": 57,
+          "right": 1242.046875,
+          "bottom": 618.015625
+        },
+        "artworkBounds": {
+          "left": 19,
+          "top": 19,
+          "right": 1527,
+          "bottom": 942,
+          "width": 1536,
+          "height": 1024
+        },
+        "artworkRect": {
+          "left": 97.83200677235921,
+          "right": 706.1315584182739,
+          "top": 206.37112495303154,
+          "bottom": 579.6528097987175
+        },
+        "shipArtworkInsideStage": true,
+        "typographyAndActionsInsideViewport": true,
+        "copyAndActionsDoNotOverlap": true,
+        "horizontalOverflow": false,
+        "briefingBorder": "none",
+        "briefingBackground": "rgba(0, 0, 0, 0)",
+        "shipAnimation": "ship-reveal, ship-drift",
+        "shipTranslate": "-3.96819px -0.0212094px",
+        "shipRotate": "-0.178586deg",
+        "controls": {
+          "create": true,
+          "join": true,
+          "audio": true,
+          "skip": true
+        },
+        "screenshot": "landing-laptop-1366x768.png"
+      },
+      {
+        "profile": "desktop",
+        "viewport": {
+          "innerWidth": 1920,
+          "innerHeight": 1080
+        },
+        "imageLoaded": true,
+        "ship": {
+          "x": 251.75765991210938,
+          "y": 320.75140380859375,
+          "width": 743.0635986328125,
+          "height": 496.36273193359375,
+          "right": 994.8212585449219,
+          "bottom": 817.1141357421875
+        },
+        "stage": {
+          "x": 240,
+          "y": 312.59375,
+          "width": 772.796875,
+          "height": 550.796875,
+          "right": 1012.796875,
+          "bottom": 863.390625
+        },
+        "title": {
+          "x": 1150.796875,
+          "y": 349.1875,
+          "width": 487.203125,
+          "height": 142.03125,
+          "right": 1638,
+          "bottom": 491.21875
+        },
+        "mission": {
+          "x": 1150.796875,
+          "y": 518.21875,
+          "width": 487.203125,
+          "height": 181.578125,
+          "right": 1638,
+          "bottom": 699.796875
+        },
+        "actions": {
+          "x": 1150.796875,
+          "y": 726.796875,
+          "width": 487.203125,
+          "height": 57,
+          "right": 1638,
+          "bottom": 783.796875
+        },
+        "artworkBounds": {
+          "left": 19,
+          "top": 19,
+          "right": 1527,
+          "bottom": 942,
+          "width": 1536,
+          "height": 1024
+        },
+        "artworkRect": {
+          "left": 260.9492018222809,
+          "right": 990.4673702716827,
+          "top": 329.96125918626785,
+          "bottom": 777.3663388490677
+        },
+        "shipArtworkInsideStage": true,
+        "typographyAndActionsInsideViewport": true,
+        "copyAndActionsDoNotOverlap": true,
+        "horizontalOverflow": false,
+        "briefingBorder": "none",
+        "briefingBackground": "rgba(0, 0, 0, 0)",
+        "shipAnimation": "ship-reveal, ship-drift",
+        "shipTranslate": "-3.05366px -0.630891px",
+        "shipRotate": "-0.137941deg",
+        "controls": {
+          "create": true,
+          "join": true,
+          "audio": true,
+          "skip": true
+        },
+        "screenshot": "landing-desktop-1920x1080.png"
+      },
+      {
+        "profile": "ultrawide",
+        "viewport": {
+          "innerWidth": 2560,
+          "innerHeight": 1440
+        },
+        "imageLoaded": true,
+        "ship": {
+          "x": 575.8733520507812,
+          "y": 499.0637512207031,
+          "width": 742.0474243164062,
+          "height": 494.8367614746094,
+          "right": 1317.9207763671875,
+          "bottom": 993.9005126953125
+        },
+        "stage": {
+          "x": 560,
+          "y": 468,
+          "width": 772.796875,
+          "height": 600,
+          "right": 1332.796875,
+          "bottom": 1068
+        },
+        "title": {
+          "x": 1470.796875,
+          "y": 529.1875,
+          "width": 487.203125,
+          "height": 142.03125,
+          "right": 1958,
+          "bottom": 671.21875
+        },
+        "mission": {
+          "x": 1470.796875,
+          "y": 698.21875,
+          "width": 487.203125,
+          "height": 181.578125,
+          "right": 1958,
+          "bottom": 879.796875
+        },
+        "actions": {
+          "x": 1470.796875,
+          "y": 906.796875,
+          "width": 487.203125,
+          "height": 57,
+          "right": 1958,
+          "bottom": 963.796875
+        },
+        "artworkBounds": {
+          "left": 19,
+          "top": 19,
+          "right": 1527,
+          "bottom": 942,
+          "width": 1536,
+          "height": 1024
+        },
+        "artworkRect": {
+          "left": 585.0523240963618,
+          "right": 1313.5728422403336,
+          "top": 508.24529269337654,
+          "bottom": 954.2749126553535
+        },
+        "shipArtworkInsideStage": true,
+        "typographyAndActionsInsideViewport": true,
+        "copyAndActionsDoNotOverlap": true,
+        "horizontalOverflow": false,
+        "briefingBorder": "none",
+        "briefingBackground": "rgba(0, 0, 0, 0)",
+        "shipAnimation": "ship-reveal, ship-drift",
+        "shipTranslate": "0.499534px -2.99969px",
+        "shipRotate": "0.0199793deg",
+        "controls": {
+          "create": true,
+          "join": true,
+          "audio": true,
+          "skip": true
+        },
+        "screenshot": "landing-ultrawide-2560x1440.png"
+      }
+    ],
+    "driftObserved": true,
+    "reducedMotionAnimation": "none",
+    "audioToggled": true,
+    "skipIntroApplied": true
+  },
+  "finishedAt": "2026-10-29T21:52:19.390Z",
+  "browserErrors": [],
+  "result": {
+    "activeTwoClientMatch": true,
+    "cleanBackgroundLoaded": true,
+    "foregroundSpriteHasTransparency": true,
+    "shipSpriteHasTransparentCorners": true,
+    "entitiesAboveCleanBackground": true,
+    "cleanBackgroundCoversGameplayViewport": true,
+    "allViewportCanvasesNonzero": true,
+    "allViewportBackgroundsCoverScene": true,
+    "allViewportSnapshotsHaveShipAndAsteroids": true,
+    "allViewportShipPixelsPresent": true,
+    "allViewportWayfarerSpritesLoaded": true,
+    "allViewportMultipleAsteroidsSampled": true,
+    "bothClientsShareMatch": true,
+    "pilotInput": true,
+    "pilotRotation": false,
+    "gunnerDamageSynchronized": true,
+    "gunnerDestructionAndScore": null,
+    "landingArtworkFits": true,
+    "landingMotionAndReducedMotion": true,
+    "landingAudioAndSkipControls": true
+  }
+}

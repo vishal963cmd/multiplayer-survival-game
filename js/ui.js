@@ -20,6 +20,14 @@ window.UI = (function() {
     for (const [key, el] of Object.entries(screens)) {
       el.classList.toggle('active', key === name);
     }
+    window.LandingCinematic?.setActive(name === 'splash');
+    const chatToggle = document.getElementById('chat-toggle');
+    const chatPanel = document.getElementById('room-chat');
+    if (!['lobby', 'game', 'results'].includes(name)) {
+      if (chatToggle) chatToggle.hidden = true;
+      if (chatPanel) chatPanel.hidden = true;
+      chatOpen = false;
+    }
   }
 
   // ── Loading Overlay ─────────────────────────────────────────────────────
@@ -46,21 +54,34 @@ window.UI = (function() {
 
   // ── Toast Notifications ──────────────────────────────────────────────────
   const toastContainer = document.getElementById('toast-container');
-  function showToast(message, type, duration) {
+  const toastEventLedger = window.EventLedger?.create(128);
+  const toastById = new Map();
+  let chatOpen = false;
+  let chatRoomCode = null;
+  const seenChatIds = new Set();
+  const unreadChatIds = new Set();
+  function showToast(message, type, duration, eventId) {
     if (!toastContainer) return;
+    if (eventId && toastById.has(eventId)) return;
     type     = type     || 'action';
     duration = duration || 3000;
     const el = document.createElement('div');
     el.className = 'toast toast-' + type;
     el.textContent = message;
     toastContainer.appendChild(el);
-    setTimeout(() => { if (el.parentNode) el.remove(); }, duration);
+    while (toastContainer.children.length > 3) toastContainer.firstElementChild?.remove();
+    const timer = setTimeout(() => {
+      if (el.parentNode) el.remove();
+      for (const [id, record] of toastById) if (record.el === el) toastById.delete(id);
+    }, duration);
+    if (eventId) toastById.set(eventId, { el, timer });
   }
 
   // ── Lobby Screen ─────────────────────────────────────────────────────────
   function renderLobby(state) {
     const room = state.room;
     if (!room) return;
+    renderChat(room);
 
     // Room code
     const codeEl = document.getElementById('lobby-room-code');
@@ -114,43 +135,67 @@ window.UI = (function() {
   let _hudHullFillEl   = null;
   let _hudHullNumEl    = null;
   let _hudScoreEl      = null;
+  let _gameCanvas      = null;
+  let _flightRenderer  = null;
+  let _rendererBootstrap = null;
   let _lastActionTs    = 0;
   let _lastAlarmTs     = 0;
+  let _lastActionId    = null;
   let _tickSec         = 91;
-  let _rafHandle       = null;
+  let _gameLoop        = null;
 
   function initGame(state) {
     _prevHull      = 100;
-    _lastActionTs  = 0;
-    _lastAlarmTs   = 0;
+    const currentRound = state.room?.round;
+    _lastActionTs  = currentRound?.lastAction?.timestamp || 0;
+    _lastActionId  = currentRound?.lastAction?.eventId || null;
+    _lastAlarmTs   = currentRound?.broadcastAlert?.revealedAt || 0;
+    toastEventLedger?.reset(state.room?.matchId || null);
+    toastEventLedger?.process(state.room?.matchId || null, currentRound?.flight?.collisionEvents);
     _tickSec       = 91;
 
     _hudTimerEl    = document.getElementById('hud-timer');
     _hudHullFillEl = document.getElementById('hud-hull-fill');
     _hudHullNumEl  = document.getElementById('hud-hull-num');
     _hudScoreEl    = document.getElementById('hud-score-val');
+    _gameCanvas    = document.getElementById('game-canvas');
+    _rendererBootstrap = _gameCanvas && window.RendererBootstrap
+      ? window.RendererBootstrap.create(_gameCanvas, canvas => window.SpaceRenderer?.create(canvas))
+      : null;
+    _flightRenderer = _rendererBootstrap?.get() || null;
+    GunnerConsole.bindCanvas(_gameCanvas, () => App.state, renderGame);
 
+    if (!_gameLoop) _gameLoop = GameLoop.create(
+      callback => window.requestAnimationFrame(callback),
+      handle => window.cancelAnimationFrame(handle),
+      _rafTick
+    );
     renderGame(state);
     _startRaf();
   }
 
   function _startRaf() {
-    if (_rafHandle) cancelAnimationFrame(_rafHandle);
-    _rafHandle = requestAnimationFrame(_rafTick);
+    _gameLoop?.start();
   }
 
   // RAF tick — only updates the timer display (smooth countdown)
   function _rafTick() {
     const room = App.state.room;
-    if (!room || room.phase !== 'playing') return;
+    if (!room || room.phase !== 'playing') return false;
     const r = room.round;
-    if (!r) return;
+    if (!r) return false;
 
     // Compute remaining from server anchor
     const now       = Date.now();
     const elapsed   = now - (r._serverAnchorAt || now);
     const remaining = Math.max(0, (r._serverRemainingMs || 0) - elapsed);
     const secs      = Math.ceil(remaining / 1000);
+
+    if (!_flightRenderer) _flightRenderer = _rendererBootstrap?.get(now) || null;
+    if (_flightRenderer) {
+      const selectedAsteroidId = window.GunnerConsole?.getSelectedTarget?.() || null;
+      _flightRenderer.draw(r.flight, r.hullIntegrity, r.activeBuffs, now, selectedAsteroidId);
+    }
 
     if (_hudTimerEl) {
       const m = Math.floor(remaining / 60000);
@@ -166,35 +211,73 @@ window.UI = (function() {
       Sound.tick();
     }
 
-    _rafHandle = requestAnimationFrame(_rafTick);
+    return true;
   }
 
   function stopRaf() {
-    if (_rafHandle) { cancelAnimationFrame(_rafHandle); _rafHandle = null; }
+    _gameLoop?.stop();
   }
 
   function renderGame(state) {
     const room = state.room;
     if (!room || room.phase !== 'playing' || !room.round) return;
+    renderChat(room);
     const r = room.round;
+
+    const flightHint = document.getElementById('flight-control-hint');
+    if (flightHint) {
+      const controlHost = room.players.find(player => player.isHost);
+      const heading = r.flight?.ship?.heading;
+      const headingText = Number.isFinite(heading)
+        ? ` · HEADING ${Math.round(((heading * 180 / Math.PI + 360) % 360))}°` : '';
+      flightHint.textContent = (room.isHost
+        ? 'YOU PILOT · W THRUST · S BRAKE · A / D STEER'
+        : 'SHARED SHIP · ' + (controlHost?.nickname || 'HOST') + ' PILOTING · YOU: CREW & ABILITIES') + headingText;
+      flightHint.classList.toggle('is-host', Boolean(room.isHost));
+    }
+
+    const mission = r.mission || {};
+    const missionTitle = document.getElementById('mission-title');
+    const missionObjective = document.getElementById('mission-objective');
+    const missionProgress = document.getElementById('mission-progress');
+    const missionThreat = document.getElementById('mission-threat');
+    const missionStatus = document.getElementById('mission-status');
+    if (missionTitle) missionTitle.textContent = mission.name || 'SURVIVE THE SIGNAL';
+    if (missionObjective) missionObjective.textContent = mission.objective || 'Coordinate the crew to survive the asteroid corridor.';
+    if (missionProgress) {
+      missionProgress.textContent = mission.requiredEmergencyResolutions
+        ? `Emergencies ${mission.emergenciesResolved}/${mission.requiredEmergencyResolutions} · Crew actions ${mission.crewMembersContributed}/${mission.requiredCrewMembers}`
+        : `Emergencies ${r.emergenciesResolved || 0} · Outstanding ${mission.outstandingEmergencies || 0}`;
+    }
+    if (missionThreat) missionThreat.textContent = 'NEXT THREAT · ' + (mission.nextThreat || 'Scanning');
+    if (missionStatus) missionStatus.textContent = mission.status || 'MISSION IN PROGRESS';
+    _renderThreatRadar(r, state);
 
     // Anchor for smooth timer
     r._serverAnchorAt    = Date.now();
     r._serverRemainingMs = r.remainingMs;
 
     // Hull bar
-    const hull = r.hullIntegrity;
-    if (_hudHullFillEl) {
-      const pct = Math.max(0, Math.min(100, hull));
+    const hullDisplay = window.HullStatus.fromAuthoritative(r.hullIntegrity);
+    const hull = hullDisplay.value;
+    if (_hudHullFillEl && hull !== null) {
+      const pct = hull;
       _hudHullFillEl.style.width = pct + '%';
       _hudHullFillEl.className   = 'hud-hull-fill ' +
         (pct > 60 ? 'hull-high' : pct > 30 ? 'hull-medium' : 'hull-low');
+      _hudHullFillEl.parentElement?.setAttribute('aria-valuenow', String(Math.round(pct)));
+      _hudHullFillEl.parentElement?.removeAttribute('aria-valuetext');
+    } else if (_hudHullFillEl) {
+      _hudHullFillEl.className = 'hud-hull-fill hull-unknown';
+      _hudHullFillEl.parentElement?.removeAttribute('aria-valuenow');
+      _hudHullFillEl.parentElement?.setAttribute('aria-valuetext', 'Hull status synchronizing');
     }
-    if (_hudHullNumEl) _hudHullNumEl.textContent = Math.round(hull) + '%';
+    if (_hudHullNumEl) _hudHullNumEl.textContent = hullDisplay.label;
+    if (missionStatus && hullDisplay.missionStatus) missionStatus.textContent = hullDisplay.missionStatus;
 
     // Hull damage sound
-    if (hull < _prevHull - 2) Sound.damage();
-    _prevHull = hull;
+    if (hull !== null && hull < _prevHull - 2) Sound.damage();
+    if (hull !== null) _prevHull = hull;
 
     // Score
     if (_hudScoreEl) _hudScoreEl.textContent = r.score || 0;
@@ -203,11 +286,24 @@ window.UI = (function() {
     _renderBuffs(r.activeBuffs || []);
 
     // Action broadcast toast
-    if (r.lastAction && r.lastAction.timestamp !== _lastActionTs) {
+    const newCollisionEvents = toastEventLedger?.process(room.matchId, r.flight?.collisionEvents) || [];
+    newCollisionEvents.forEach(event => {
+      const message = event.blocked
+        ? 'Point defense blocked an asteroid impact.'
+        : `Asteroid impact — hull −${event.damage}%`;
+      showToast(message, event.blocked ? 'success' : 'alert', 2800, `${room.matchId}:${event.id}`);
+    });
+
+    if (r.lastAction && (r.lastAction.eventId
+      ? r.lastAction.eventId !== _lastActionId
+      : r.lastAction.timestamp !== _lastActionTs) && r.lastAction.abilityId !== 'flight_event') {
       _lastActionTs = r.lastAction.timestamp;
+      _lastActionId = r.lastAction.eventId || null;
       const la = r.lastAction;
       if (!la.playerId || la.playerId !== state.playerId) { // don't toast your own actions to yourself (already felt instant)
-        showToast('⚡ ' + esc(la.nickname) + ' used ' + esc(la.abilityName) + '!', 'action');
+        showToast(la.message
+          ? esc(la.message)
+          : '⚡ ' + esc(la.nickname) + ' used ' + esc(la.abilityName) + '!', 'action');
       }
     }
 
@@ -222,9 +318,77 @@ window.UI = (function() {
 
     // Crew panel
     _renderCrew(room.players);
+    _renderCrewEvents(r.crewEvents);
 
     // Role panel
     _renderRolePanel(room, r, state);
+  }
+
+  function _renderThreatRadar(round, state) {
+    const radar = round.flight?.threatRadar || { targets: [], markedThreat: null };
+    const targetsEl = document.getElementById('radar-targets');
+    const summary = document.getElementById('radar-summary');
+    const button = document.getElementById('btn-mark-threat');
+    const shipMarker = document.getElementById('radar-ship');
+    const me = state.room?.players?.find(player => player.isMe);
+    const targets = radar.targets || [];
+    if (shipMarker && Number.isFinite(radar.ship?.heading)) {
+      shipMarker.setAttribute('transform', `rotate(${radar.ship.heading * 180 / Math.PI + 90} 50 50)`);
+    }
+    if (targetsEl) {
+      targetsEl.innerHTML = targets.map(target => {
+        const x = 50 + Math.max(-.48, Math.min(.48, target.dx)) / .48 * 43;
+        const y = 50 + Math.max(-.48, Math.min(.48, target.dy)) / .48 * 43;
+        const riskClass = target.marked ? 'radar-target-marked' :
+          target.threatLevel === 'high' ? 'radar-target-high' :
+          target.threatLevel === 'watch' ? 'radar-target-watch' : 'radar-target';
+        const radius = target.marked ? 3.4 : target.threatLevel === 'high' ? 2.8 : 2.2;
+        return `<circle class="${riskClass}" cx="${x.toFixed(2)}" cy="${y.toFixed(2)}" r="${radius}"><title>${target.threatLevel} threat, range ${Math.round(target.distance * 100)}%</title></circle>`;
+      }).join('');
+    }
+
+    const highest = targets.some(target => target.threatLevel === 'high') ? 'HIGH'
+      : targets.some(target => target.threatLevel === 'watch') ? 'WATCH' : 'LOW';
+    const nearest = targets[0];
+    if (summary) {
+      if (radar.markedThreat) {
+        const remaining = Math.max(0, Math.ceil((radar.markedThreat.expiresAt - Date.now()) / 1000));
+        summary.textContent = `MARKED BY ${radar.markedThreat.nickname} · ${remaining}s · ${nearest ? `NEAREST ${Math.round(nearest.distance * 100)}%` : 'TRACK LOST'}`;
+      } else {
+        summary.textContent = `${targets.length} CONTACT${targets.length === 1 ? '' : 'S'} · ${highest} · ${nearest ? `NEAREST ${Math.round(nearest.distance * 100)}%` : 'NO NEARBY ROCKS'}`;
+      }
+    }
+    if (button) {
+      const navigator = (me?.roles || [me?.role]).includes('navigator');
+      const cooldownMs = round.myCooldowns?.mark_threat || 0;
+      button.disabled = !navigator || !targets.length || cooldownMs > 0;
+      button.textContent = !navigator ? 'NAVIGATOR ONLY'
+        : cooldownMs > 0 ? `MARK AGAIN IN ${Math.ceil(cooldownMs / 1000)}s`
+          : radar.markedThreat ? 'MARK ANOTHER' : 'MARK NEAREST';
+      button.dataset.asteroidId = targets[0]?.asteroidId || '';
+    }
+  }
+
+  function _renderCrewEvents(events) {
+    const feed = document.getElementById('crew-event-feed');
+    if (!feed) return;
+    feed.replaceChildren();
+    const recent = (events || []).slice(-5).reverse();
+    if (!recent.length) {
+      const empty = document.createElement('li');
+      empty.className = 'crew-event-empty';
+      empty.textContent = 'Crew actions will appear here.';
+      feed.appendChild(empty);
+      return;
+    }
+    recent.forEach(event => {
+      const item = document.createElement('li');
+      item.className = 'crew-event-item';
+      const actor = document.createElement('strong');
+      actor.textContent = `${event.nickname || 'Crew'} · `;
+      item.append(actor, document.createTextNode(event.message || 'Action recorded.'));
+      feed.appendChild(item);
+    });
   }
 
   function _renderBuffs(buffs) {
@@ -250,7 +414,7 @@ window.UI = (function() {
     const panel = document.getElementById('emergencies-list');
     if (!panel) return;
 
-    const myRole = state.room?.players?.find(p => p.isMe)?.role || null;
+    const myRole = state.room?.players?.find(p => p.isMe)?.roles || [state.room?.players?.find(p => p.isMe)?.role].filter(Boolean);
 
     // Build a map of current card IDs
     const existing = {};
@@ -372,7 +536,8 @@ window.UI = (function() {
     if (!panel) return;
     panel.innerHTML = '';
     players.forEach(p => {
-      const roleDef = p.role ? GAME_DATA.getRoleDef(p.role) : null;
+      const roleDefs = GAME_DATA.getRoleDefs(p.roles || (p.role ? [p.role] : []));
+      const roleDef = roleDefs[0] || null;
       const div     = document.createElement('div');
       div.className = 'crew-member' + (p.isMe ? ' is-me' : '');
       div.innerHTML =
@@ -380,28 +545,90 @@ window.UI = (function() {
         '<div class="crew-role-icon">' + (roleDef ? roleDef.icon : '👤') + '</div>' +
         '<div class="crew-info">' +
           '<div class="crew-name">' + esc(p.nickname) + (p.isMe ? ' ★' : '') + '</div>' +
-          '<div class="crew-role-name">' + (roleDef ? roleDef.name : 'Unassigned') + '</div>' +
+          '<div class="crew-role-name">' + (roleDefs.length ? roleDefs.map(def => esc(def.name)).join(' + ') : 'Unassigned') + '</div>' +
         '</div>';
+      if (p.isHost) {
+        const pilot = document.createElement('span');
+        pilot.className = 'crew-pilot-badge';
+        pilot.textContent = 'PILOT';
+        div.appendChild(pilot);
+      }
       panel.appendChild(div);
     });
   }
 
   function _renderRolePanel(room, round, state) {
     const me      = room.players.find(p => p.isMe);
-    const roleDef = me?.role ? GAME_DATA.getRoleDef(me.role) : null;
+    const roles = me?.roles || (me?.role ? [me.role] : []);
+    const roleDefs = GAME_DATA.getRoleDefs(roles);
+    const roleDef = roleDefs[0] || null;
 
     const iconEl  = document.getElementById('my-role-icon');
     const nameEl  = document.getElementById('my-role-name');
     const descEl  = document.getElementById('my-role-desc');
     if (iconEl) iconEl.textContent = roleDef ? roleDef.icon  : '?';
-    if (nameEl) nameEl.textContent = roleDef ? roleDef.name  : 'Unknown';
-    if (descEl) descEl.textContent = roleDef ? roleDef.description : '';
+    if (nameEl) nameEl.textContent = roleDefs.length ? roleDefs.map(def => def.name).join(' + ') : 'Unknown';
+    if (descEl) descEl.textContent = roleDefs.map(def => def.description).join(' ');
 
     const abList = document.getElementById('abilities-list');
     if (!abList || !roleDef) return;
     abList.innerHTML = '';
 
-    roleDef.abilities.forEach(ab => {
+    const abilities = roleDefs.flatMap(def => def.abilities);
+    const gunner = roles.includes('gunner');
+    document.querySelector('.game-body')?.classList.toggle('gunner-aim', gunner);
+    GunnerConsole.render({ round, roles, matchId: room.matchId, isPlaying: room.phase === 'playing' });
+
+    const powerConsole = document.getElementById('power-console');
+    const hasPowerRole = roles.includes('power_operator');
+    if (powerConsole) powerConsole.hidden = !hasPowerRole;
+    const power = round.power || { allocations: { engines: 34, shields: 33, weapons: 33 }, energy: 100 };
+    const powerInputs = ['engines', 'shields', 'weapons'].map(key => document.getElementById(`power-${key}`));
+    powerInputs.forEach((input, index) => {
+      if (input && document.activeElement !== input) input.value = power.allocations?.[['engines', 'shields', 'weapons'][index]] ?? [34, 33, 33][index];
+    });
+    const applyPower = document.getElementById('btn-apply-power');
+    const powerTotal = document.getElementById('power-total');
+    const updatePowerTotal = () => {
+      const values = powerInputs.map(input => Number(input?.value));
+      const total = values.reduce((sum, value) => sum + (Number.isFinite(value) ? value : 0), 0);
+      if (powerTotal) powerTotal.textContent = `TOTAL ${total} / 100 · RESERVE ${power.energy ?? 100}`;
+      if (applyPower) applyPower.disabled = !hasPowerRole || total !== 100 || values.some(value => !Number.isInteger(value) || value < 0 || value > 100);
+    };
+    powerInputs.forEach(input => { if (input) input.oninput = updatePowerTotal; });
+    updatePowerTotal();
+    if (applyPower) applyPower.onclick = () => {
+      const allocations = Object.fromEntries(['engines', 'shields', 'weapons'].map((key, index) => [key, Number(powerInputs[index]?.value)]));
+      App.onUseAbility('allocate_power', null, null, JSON.stringify(allocations));
+    };
+
+    const commsConsole = document.getElementById('comms-console');
+    const hasCommsRole = roles.includes('communications_officer');
+    const task = round.communicationTask;
+    if (commsConsole) commsConsole.hidden = !hasCommsRole;
+    const commsStatus = document.getElementById('comms-task-status');
+    const commsOptions = document.getElementById('comms-options');
+    if (commsStatus) {
+      if (!task) commsStatus.textContent = 'No transmission assigned.';
+      else if (task.completedAt) commsStatus.textContent = 'SIGNAL CONFIRMED · +100 TEAM SCORE';
+      else if (task.expiredAt || task.expiresAt <= Date.now()) commsStatus.textContent = 'SIGNAL WINDOW CLOSED';
+      else commsStatus.textContent = `Repeat the three-symbol sequence before ${Math.ceil((task.expiresAt - Date.now()) / 1000)}s: ${(task.sequence || []).join(' ')}`;
+    }
+    if (commsOptions) {
+      commsOptions.replaceChildren();
+      (task?.options || []).forEach((sequence, index) => {
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'comms-option';
+        option.textContent = sequence.join(' ');
+        option.setAttribute('aria-label', `Signal answer ${index + 1}: ${sequence.join(' ')}`);
+        option.disabled = !hasCommsRole || !task || !!task.completedAt || !!task.expiredAt || task.expiresAt <= Date.now();
+        option.onclick = () => App.onUseAbility('decode_signal', null, null, String(index));
+        commsOptions.appendChild(option);
+      });
+    }
+
+    abilities.filter(ability => !['pulse_cannon', 'allocate_power', 'decode_signal'].includes(ability.id)).forEach(ab => {
       const cdMs  = (round.myCooldowns || {})[ab.id] || 0;
       const ready = cdMs <= 0;
       const totalCd = ab.cooldownMs;
@@ -426,7 +653,9 @@ window.UI = (function() {
         '<div class="abl-cooldown-overlay" style="height:' + pct + '%"></div>';
 
       if (ready) {
-        btn.onclick = function() { App.onUseAbility(ab.id); };
+        btn.onclick = function() {
+          App.onUseAbility(ab.id, null, null);
+        };
       }
 
       wrap.appendChild(btn);
@@ -443,6 +672,7 @@ window.UI = (function() {
   function renderResults(state) {
     const room = state.room;
     if (!room || room.phase !== 'results' || !room.results) return;
+    renderChat(room);
     const res = room.results;
 
     const iconEl     = document.getElementById('outcome-icon');
@@ -461,21 +691,40 @@ window.UI = (function() {
       if (iconEl)  iconEl.textContent    = '💀';
       if (titleEl) { titleEl.textContent = 'MISSION FAILED'; titleEl.className = 'outcome-title outcome-lose'; }
       const cod = res.causeOfDeath ? GAME_DATA.getEmergencyDef(res.causeOfDeath) : null;
-      if (subtitleEl) subtitleEl.textContent = cod ? 'The crew was lost to: ' + cod.name : 'The ship was destroyed.';
+      if (subtitleEl) subtitleEl.textContent = res.causeOfDeath === 'mission_objective_incomplete'
+        ? 'The ship survived, but the crew did not meet the shared response objective.'
+        : cod ? 'The crew was lost to: ' + cod.name : 'The ship was destroyed.';
       Sound.defeat();
     }
 
     if (scoreEl) scoreEl.textContent = (res.finalScore || 0).toLocaleString();
 
     if (bdEl) {
-      const remainSecs = res.outcome === 'win' ? Math.max(0, 90 - res.survivedSeconds) : 0;
+      const score = res.scoreBreakdown || {};
+      const roles = res.roleContributions || {};
+      const pilot = roles.pilot || {};
+      const navigator = roles.navigator || {};
+      const engineer = roles.engineer || {};
+      const gunner = roles.gunner || {};
+      const powerOperator = roles.powerOperator || {};
+      const communicationsOfficer = roles.communicationsOfficer || {};
       bdEl.innerHTML =
-        _bdRow('Base Score',               res.outcome === 'win' ? '1,000' : '0') +
-        _bdRow('Time Remaining (×10)',      res.outcome === 'win' ? remainSecs + ' × 10 = ' + (remainSecs*10) : '—') +
-        _bdRow('Hull Integrity (×5)',       Math.round(res.hullIntegrity) + '% × 5 = ' + Math.round(res.hullIntegrity*5)) +
-        _bdRow('Emergencies Resolved (×75)',(res.emergenciesResolved||0) + ' × 75 = ' + (res.emergenciesResolved||0)*75) +
+        _bdRow('Mission completion', `${score.missionComplete ?? (res.outcome === 'win' ? 1000 : 0)} pts`) +
+        _bdRow(`Survival time (${res.roundDurationSeconds || 90}s round)`, `${res.survivedSeconds || 0}s · ${score.remainingTime ?? 0} pts`) +
+        _bdRow('Final hull', `${Math.round(res.hullIntegrity)}% · ${score.hullIntegrity ?? Math.round(res.hullIntegrity) * 5} pts`) +
+        _bdRow('Emergencies resolved', `${res.emergenciesResolved || 0} · ${score.emergenciesResolved ?? (res.emergenciesResolved || 0) * 75} pts`) +
+        _bdRow('Rapid responses', `${res.speedBonuses || 0} × 25 = ${score.rapidResponses ?? 0} pts`) +
+        _bdRow('Combat score', `${score.combatScore ?? 0} pts`) +
+        _bdRow('Communications score', `${score.communicationsScore ?? 0} pts`) +
         '<div class="score-divider"></div>' +
-        _bdRow('TOTAL', (res.finalScore||0).toLocaleString());
+        _bdRow(`Pilot · ${pilot.nickname || '—'}`, `${pilot.maneuvers || 0} course changes`) +
+        _bdRow(`Navigator · ${navigator.nickname || '—'}`, `${navigator.threatsMarked || 0} marked · ${navigator.threatsDiverted || 0} diverted`) +
+        _bdRow(`Engineer · ${engineer.nickname || '—'}`, `${engineer.repairs || 0} repairs · ${Math.round(engineer.hullRestored || 0)} hull restored · ${engineer.shieldsActivated || 0} shields`) +
+        _bdRow(`Gunner · ${gunner.nickname || '—'}`, `${gunner.shots || 0} pulse hits · ${gunner.asteroidsDestroyed || 0} destroyed`) +
+        _bdRow(`Power Operator · ${powerOperator.nickname || '—'}`, `${powerOperator.allocations || 0} allocations · ${powerOperator.boosts || 0} engine boosts`) +
+        _bdRow(`Communications · ${communicationsOfficer.nickname || '—'}`, `${communicationsOfficer.tasksCompleted || 0} signal tasks confirmed`) +
+        '<div class="score-divider"></div>' +
+        _bdRow('TEAM TOTAL', (res.finalScore || 0).toLocaleString());
     }
 
     if (rematchBtn) {
@@ -488,7 +737,79 @@ window.UI = (function() {
   }
 
   function _bdRow(label, value) {
-    return '<div class="score-row-label">' + esc(label) + '</div><div class="score-row-val">' + esc(String(value)) + '</div>';
+    return '<div class="score-row-label">' + esc(String(label)) + '</div><div class="score-row-val">' + esc(String(value)) + '</div>';
+  }
+
+  function renderChat(room) {
+    const toggle = document.getElementById('chat-toggle');
+    const panel = document.getElementById('room-chat');
+    const list = document.getElementById('chat-messages');
+    const unread = document.getElementById('chat-unread');
+    if (!toggle || !panel || !list) return;
+    toggle.hidden = !room || !['lobby', 'playing', 'results'].includes(room.phase);
+    if (chatRoomCode !== room.roomCode) {
+      chatRoomCode = room.roomCode;
+      seenChatIds.clear();
+      unreadChatIds.clear();
+      setChatStatus('Messages are shared with this room.');
+      for (const message of room.chatMessages || []) seenChatIds.add(message.id);
+    }
+    const messages = room.chatMessages || [];
+    if (chatOpen) {
+      for (const message of messages) seenChatIds.add(message.id);
+      unreadChatIds.clear();
+    } else {
+      for (const message of messages) {
+        if (!seenChatIds.has(message.id) && !message.isMe) unreadChatIds.add(message.id);
+        seenChatIds.add(message.id);
+      }
+    }
+    while (seenChatIds.size > 200) seenChatIds.delete(seenChatIds.values().next().value);
+    while (unreadChatIds.size > 100) unreadChatIds.delete(unreadChatIds.values().next().value);
+    unread.hidden = unreadChatIds.size === 0;
+    unread.textContent = String(unreadChatIds.size);
+    panel.hidden = !chatOpen;
+    toggle.setAttribute('aria-expanded', String(chatOpen));
+    const context = document.getElementById('chat-room-context');
+    if (context) context.textContent = `Room · ${room.roomCode}`;
+    const wasNearBottom = list.scrollHeight - list.scrollTop - list.clientHeight < 48;
+    list.replaceChildren();
+    for (const message of messages) {
+      const item = document.createElement('li');
+      const heading = document.createElement('strong');
+      const body = document.createElement('span');
+      const time = document.createElement('time');
+      heading.textContent = message.isMe ? 'You' : message.sender;
+      body.textContent = message.text;
+      time.dateTime = new Date(message.timestamp).toISOString();
+      time.textContent = new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      item.append(heading, body, time);
+      list.appendChild(item);
+    }
+    if (!messages.length) {
+      const empty = document.createElement('li');
+      empty.className = 'chat-empty';
+      empty.textContent = 'No messages yet. Send the first signal to your crew.';
+      list.appendChild(empty);
+    }
+    if (chatOpen && wasNearBottom) list.scrollTop = list.scrollHeight;
+  }
+
+  function toggleChat(force) {
+    chatOpen = typeof force === 'boolean' ? force : !chatOpen;
+    if (chatOpen) {
+      for (const message of (window.App?.state?.room?.chatMessages || [])) seenChatIds.add(message.id);
+      unreadChatIds.clear();
+      const input = document.getElementById('chat-input');
+      input?.focus();
+    }
+    const room = window.App?.state?.room;
+    if (room) renderChat(room);
+  }
+
+  function setChatStatus(message) {
+    const status = document.getElementById('chat-status');
+    if (status) status.textContent = message;
   }
 
   // ── Starfield Canvas ──────────────────────────────────────────────────────
@@ -514,15 +835,13 @@ window.UI = (function() {
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const t = Date.now() / 1000;
       stars.forEach(s => {
-        const alpha = 0.4 + 0.5 * Math.abs(Math.sin(t * s.speed + s.a * 6.28));
+        const alpha = 0.25 + 0.55 * s.a;
         ctx.beginPath();
         ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
         ctx.fillStyle = 'rgba(200,230,255,' + alpha + ')';
         ctx.fill();
       });
-      requestAnimationFrame(draw);
     }
     draw();
   }
@@ -542,6 +861,8 @@ window.UI = (function() {
     showError,
     clearError,
     showToast,
+    toggleChat,
+    setChatStatus,
     renderLobby,
     initGame,
     renderGame,

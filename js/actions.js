@@ -26,8 +26,19 @@ window.API = (function() {
       });
     }
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Server error ' + res.status);
+    let data;
+    try {
+      data = await res.json();
+    } catch (_) {
+      data = {};
+    }
+    if (!res.ok) {
+      const error = new Error(data.error || (res.status === 429
+        ? 'Too many requests. Please wait a moment and try again.'
+        : 'Server error ' + res.status));
+      error.status = res.status;
+      throw error;
+    }
     return data;
   }
 
@@ -41,8 +52,12 @@ window.API = (function() {
       return callAPI('join_room', { roomCode, nickname });
     },
 
-    getState(roomCode, playerId) {
-      return callAPI('get_state', { roomCode, playerId }, 'GET');
+    getState(roomCode, playerId, flightInput) {
+      return callAPI('get_state', { roomCode, playerId, ...(flightInput ? { flightInput } : {}) });
+    },
+
+    sendChat(roomCode, playerId, text, actionId) {
+      return callAPI('send_chat', { roomCode, playerId, text, actionId });
     },
 
     startGame(roomCode, playerId) {
@@ -50,18 +65,34 @@ window.API = (function() {
     },
 
     // ── Game ─────────────────────────────────────────────────────────
-    useAbility(roomCode, playerId, abilityId, targetEmergencyId) {
+    useAbility(roomCode, playerId, matchId, abilityId, targetEmergencyId, actionId, targetAsteroidId, targetSystem) {
       return callAPI('player_action', {
         roomCode,
         playerId,
+        matchId,
+        actionId,
         abilityId,
-        targetEmergencyId: targetEmergencyId || null
+        targetEmergencyId: targetEmergencyId || null,
+        targetAsteroidId: targetAsteroidId || null,
+        targetSystem: targetSystem || null
       });
+    },
+
+    setCourse(roomCode, playerId, matchId, inputX, inputY, inputSequence, actionId) {
+      return callAPI('set_course', { roomCode, playerId, matchId, inputX, inputY, inputSequence, actionId });
+    },
+
+    markThreat(roomCode, playerId, matchId, asteroidId, actionId) {
+      return callAPI('mark_threat', { roomCode, playerId, matchId, asteroidId, actionId });
     },
 
     // ── Post-game ────────────────────────────────────────────────────
     requestRematch(roomCode, playerId) {
       return callAPI('request_rematch', { roomCode, playerId });
+    },
+
+    leaveRoom(roomCode, playerId) {
+      return callAPI('leave_room', { roomCode, playerId });
     },
 
     ping(roomCode, playerId) {

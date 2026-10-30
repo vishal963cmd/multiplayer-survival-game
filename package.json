@@ -5,13 +5,14 @@
   "private": true,
   "scripts": {
     "dev": "netlify dev",
-    "test": "node test/gameRules.test.js && node test/store.production.test.js && node test/writeRoom.test.js"
+    "test": "node test/gameRules.test.js && node test/flightControls.test.js && node test/flightSnapshots.test.js && node test/sceneCoordinates.test.js && node test/hullStatus.test.js && node test/eventLedger.test.js && node test/gameLoop.test.js && node test/spaceflight.test.js && node test/spaceRenderer.test.js && node test/gameplayBackground.test.js && node test/gunnerConsole.test.js && node test/landing.test.js && node test/store.production.test.js && node test/writeRoom.test.js && node test/roomLifecycle.test.js && node test/api.handler.test.js",
+    "test:integration": "node test/api.room.integration.test.js"
   },
   "dependencies": {
-    "@netlify/blobs": "^8.1.0"
+    "@netlify/blobs": "^11.1.7"
   },
   "devDependencies": {
-    "netlify-cli": "^17.0.0"
+    "netlify-cli": "^27.15.0"
   },
   "engines": {
     "node": ">=18.0.0"

@@ -1,0 +1,68 @@
+{
+  "baseUrl": "http://localhost:8888",
+  "startedAt": "2026-10-29T21:55:26.962Z",
+  "browser": "isolated headless Chrome via CDP",
+  "server": "existing local Netlify Dev; no server process started by this script",
+  "room": {
+    "createdThroughLandingUi": true,
+    "roomCode": "NHZZZP"
+  },
+  "clients": {
+    "host": {
+      "nickname": "CDP Pilot",
+      "role": []
+    },
+    "guest": {
+      "nickname": "CDP Gunner",
+      "role": []
+    }
+  },
+  "input": {},
+  "gunner": {
+    "selectedThroughUi": true,
+    "targetId": "rock_0",
+    "targetLabel": "TARGET 01 · HULL 3/3 · 37%",
+    "healthBefore": 3,
+    "healthAfterObservedByHost": 2,
+    "authoritativeDamageObserved": true
+  },
+  "viewports": [],
+  "errors": [],
+  "artifactDir": "C:\\Users\\visha\\OneDrive\\Desktop\\Survive Together\\test-artifacts\\phase17b-2026-10-29T21-55-26-925Z",
+  "background": {
+    "src": "/assets/wayfarer-gameplay-space.png",
+    "width": 1672,
+    "height": 941,
+    "loaded": true,
+    "active": true,
+    "sprite": {
+      "width": 1774,
+      "height": 887,
+      "alphaMin": 0,
+      "alphaMax": 255,
+      "opaquePixels": 760019,
+      "transparentCorners": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "sceneCoversScene": true,
+    "imageStyle": {
+      "position": "absolute",
+      "zIndex": "0",
+      "objectFit": "cover",
+      "pointerEvents": "none"
+    },
+    "canvasStyle": {
+      "zIndex": "1",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    "canvasMatchesBackground": {
+      "width": true,
+      "height": true
+    }
+  },
+  "finishedAt": "2026-10-29T21:55:44.156Z"
+}

@@ -87,6 +87,12 @@ window.Sound = (function() {
       playTone({ freq: 1046, type: 'sine',    duration: 0.12, vol: 0.2, delay: 0.08 });
     },
 
+    // ── Gunner pulse cannon ──────────────────────────────────────────
+    pulseCannon() {
+      sweep({ startFreq: 1150, endFreq: 180, duration: 0.16, type: 'sawtooth', vol: 0.14 });
+      playTone({ freq: 1680, type: 'triangle', duration: 0.045, vol: 0.09, delay: 0.015 });
+    },
+
     // ── Emergency resolved ─────────────────────────────────────────────
     resolved() {
       [523, 659, 784, 1046].forEach((f, i) =>

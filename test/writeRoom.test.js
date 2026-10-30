@@ -29,6 +29,23 @@ test('writeRoom succeeds when no etag', async () => {
   if (result !== true) throw new Error('Expected true when no etag');
 });
 
+test('writeRoom rejects an update when storage omits its etag', async () => {
+  const originalNetlifyDev = process.env.NETLIFY_DEV;
+  delete process.env.NETLIFY_DEV;
+
+  try {
+    await writeRoom(mockStore, 'room3', { foo: 'bar' }, undefined);
+    throw new Error('Expected missing etag to reject an unsafe update');
+  } catch (error) {
+    if (!String(error.message).includes('Cannot safely update room without a storage ETag')) {
+      throw error;
+    }
+  } finally {
+    if (originalNetlifyDev === undefined) delete process.env.NETLIFY_DEV;
+    else process.env.NETLIFY_DEV = originalNetlifyDev;
+  }
+});
+
 // Test sanitize does not expose secret player IDs
 const sampleRoom = {
   roomCode: 'ABCD',

@@ -13,33 +13,39 @@ window.Poller = (function() {
   let playerId    = null;
   let running     = false;
   let pollActive  = false; // prevent overlapping polls
+  let generation  = 0;
 
   function start(rc, pid) {
     stop(); // clear any existing timer
     roomCode = rc;
     playerId = pid;
+    generation++;
     running = true;
     _poll(); // immediate first poll
     timer = setInterval(_poll, POLL_INTERVAL_MS);
   }
 
   function stop() {
+    generation++;
     running = false;
     if (timer) { clearInterval(timer); timer = null; }
   }
 
   async function _poll() {
     if (!running || pollActive || !roomCode || !playerId) return;
+    const pollGeneration = generation;
+    const pollRoomCode = roomCode;
+    const pollPlayerId = playerId;
     pollActive = true;
     try {
-      const data = await API.getState(roomCode, playerId);
-      if (data && data.room) {
+      const data = await API.getState(pollRoomCode, pollPlayerId, App.getFlightInput());
+      if (running && pollGeneration === generation && data && data.room) {
         App.onStateUpdate(data.room);
       }
     } catch (e) {
       // Network issues are expected — don't break polling
       console.warn('[Poller] Poll error:', e.message);
-      App.onPollError(e);
+      if (running && pollGeneration === generation) App.onPollError(e);
     } finally {
       pollActive = false;
     }

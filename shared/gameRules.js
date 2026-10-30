@@ -1,5 +1,8 @@
 'use strict';
 
+const { randomBytes, randomInt } = require('node:crypto');
+const { createFlightState, advanceFlight, armAsteroidHazard } = require('./spaceflight');
+
 // ════════════════════════════════════════════════════════════════════════════
 // Signal Shift: Survive Together — Shared Game Rules
 // Imported by: netlify/functions/game.js
@@ -15,9 +18,15 @@ const DISCONNECT_TIMEOUT_MS  = 10_000;
 const ROOM_CODE_CHARS        = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // excludes I O 0 1 and digits
 const MAX_ACTIVE_EMERGENCIES = 3;
 const TUTORIAL_EMERGENCY_MS  = 15_000; // first guaranteed emergency at 15 s
+const COOPERATIVE_EMERGENCY_TARGET = 3;
+const COOPERATIVE_CREW_TARGET = 2;
 
 // ── Role Definitions ─────────────────────────────────────────────────────────
 const ROLES = [
+  {
+    id: 'pilot', name: 'Pilot', icon: '🛸', color: '#67e8f9',
+    description: 'Steer the shared ship with WASD or the arrow keys.', abilities: []
+  },
   {
     id: 'engineer',
     name: 'Engineer',
@@ -118,6 +127,13 @@ const ROLES = [
     description: 'Eliminates external threats with precision firepower.',
     abilities: [
       {
+        id: 'pulse_cannon',
+        name: 'Pulse Cannon',
+        icon: '☄️',
+        description: 'Aim at a real asteroid and fire. One precise shot destroys the selected rock.',
+        cooldownMs: 1800
+      },
+      {
         id: 'counter_blast',
         name: 'Counter Blast',
         icon: '💥',
@@ -154,6 +170,21 @@ const ROLES = [
         description: 'Instantly resolve any one active emergency',
         cooldownMs: 60000
       }
+    ]
+  },
+  {
+    id: 'power_operator', name: 'Power Systems Operator', icon: '⚡', color: '#facc15',
+    description: 'Route power to engines, shields, and weapons.',
+    abilities: [
+      { id: 'allocate_power', name: 'Route Power', icon: '🔋', description: 'Distribute the 100-point power budget across ship systems.', cooldownMs: 1000 },
+      { id: 'boost_engines', name: 'Engine Overdrive', icon: '🚀', description: 'Boost shared ship acceleration for 8 seconds.', cooldownMs: 25000 }
+    ]
+  },
+  {
+    id: 'communications_officer', name: 'Communications Officer', icon: '📡', color: '#c084fc',
+    description: 'Decode and confirm the crew’s incoming signal.',
+    abilities: [
+      { id: 'decode_signal', name: 'Decode Signal', icon: '🔐', description: 'Submit the active signal code before its deadline.', cooldownMs: 0 }
     ]
   }
 ];
@@ -287,6 +318,14 @@ function generateEmergencySchedule(startedAt, playerCount, roleIds) {
     typeId: tutorialPick.id,
     severity: 1
   });
+  // A guaranteed navigator-response event creates a real shared flight hazard.
+  // The game tick marks one approaching asteroid for this emergency.
+  schedule.push({
+    id: 'em_rogue_asteroid',
+    spawnAt: startedAt + 40000,
+    typeId: 'rogue_asteroid',
+    severity: 1
+  });
 
   // Chaos phase — accelerating Poisson schedule
   // Only include types resolvable by the present roles (via direct or fallback)
@@ -324,16 +363,41 @@ function generateEmergencySchedule(startedAt, playerCount, roleIds) {
     });
   }
 
+  // Keep the default-length match from occasionally producing a nearly empty
+  // encounter list when the seeded Poisson draws happen to be unusually sparse.
+  // The guaranteed tutorial encounter plus these deterministic fallbacks make
+  // the minimum gameplay cadence stable without changing denser schedules.
+  const fallbackTimes = [startedAt + 30000, startedAt + 45000];
+  for (const spawnAt of fallbackTimes) {
+    if (schedule.length >= 3 || spawnAt >= endTime) break;
+    const pick = usable[schedule.length % usable.length];
+    schedule.push({
+      id: `em_min_${schedule.length}`,
+      spawnAt,
+      typeId: pick.id,
+      severity: 1
+    });
+  }
+  schedule.sort((a, b) => a.spawnAt - b.spawnAt);
+
   return schedule;
 }
 
 // ── Role Assignment ───────────────────────────────────────────────────────────
-// Assigns roles in join order. Players beyond ROLES.length get role[0] (Engineer).
-function assignRoles(players) {
-  return players.map((p, i) => ({
-    ...p,
-    role: ROLES[Math.min(i, ROLES.length - 1)].id
-  }));
+function assignRoles(players, hostId = players[0]?.id) {
+  const roleOrder = [...players].sort((a, b) => Number(b.id === hostId) - Number(a.id === hostId));
+  const assignments = {
+    2: [['pilot', 'engineer'], ['navigator', 'gunner']],
+    3: [['pilot'], ['engineer'], ['navigator', 'gunner']],
+    4: [['pilot'], ['engineer'], ['navigator'], ['gunner']],
+    5: [['pilot'], ['engineer'], ['navigator'], ['gunner'], ['power_operator']],
+    6: [['pilot'], ['engineer'], ['navigator'], ['gunner'], ['power_operator'], ['communications_officer']]
+  }[players.length];
+  if (!assignments) return roleOrder.map(p => ({ ...p, role: null, roles: [] }));
+  return roleOrder.map((p, i) => {
+    const roles = assignments[i];
+    return { ...p, role: roles[0], roles: [...roles] };
+  });
 }
 
 // ── Can Role Resolve Emergency ────────────────────────────────────────────────
@@ -341,15 +405,15 @@ function canRoleResolve(roleId, emergency) {
   const def = EMERGENCY_TYPES.find(e => e.id === emergency.typeId);
   if (!def) return false;
   if (!def.resolveRole) return true;               // any player
-  if (def.resolveRole === roleId) return true;
-  if (def.altRole === roleId) return true;
-  if (def.fallbackToEngineer && roleId === 'engineer') return true;
+  const roles = Array.isArray(roleId) ? roleId : [roleId];
+  if (roles.includes(def.resolveRole)) return true;
+  if (roles.includes(def.altRole)) return true;
+  if (def.fallbackToEngineer && roles.includes('engineer')) return true;
   return false;
 }
 
 // ── Buff Helpers ──────────────────────────────────────────────────────────────
-function isBuffActive(round, buffId) {
-  const now = Date.now();
+function isBuffActive(round, buffId, now = Date.now()) {
   return (round.activeBuffs || []).some(b => b.id === buffId && b.expiresAt > now);
 }
 
@@ -373,11 +437,55 @@ function tickGameState(room, now) {
   const elapsed   = now - round.startedAt;
   const lastTick  = round.lastTickAt || round.startedAt;
   const deltaSec  = Math.max(0, (now - lastTick) / 1000);
+  round.resolvedEmergencies = round.resolvedEmergencies || [];
 
   pruneBuffs(round);
 
-  const shieldActive = isBuffActive(round, 'boost_shields');
-  const dmgMult = shieldActive ? 0.5 : 1.0;
+  const shieldActive = isBuffActive(round, 'boost_shields', now);
+  const shieldPower = round.power?.allocations?.shields || 0;
+  const dmgMult = (shieldActive ? 0.5 : 1.0) * (1 - shieldPower * 0.003);
+  if (round.communicationTask && !round.communicationTask.completedAt && now >= round.communicationTask.expiresAt) {
+    round.communicationTask.expiredAt = round.communicationTask.expiredAt || now;
+  }
+
+  if (round.flight) {
+    const enginePower = round.power?.allocations?.engines ?? 34;
+    round.flight.ship.accelerationMultiplier = isBuffActive(round, 'engine_overdrive', now)
+      ? 1.65 : 0.55 + enginePower * 0.009;
+    const flightTick = advanceFlight(round.flight, now, {
+      hullIntegrity: round.hullIntegrity,
+      damageMultiplier: dmgMult,
+      pointDefense: isBuffActive(round, 'point_defense', now)
+    });
+    round.hullIntegrity = flightTick.hullIntegrity;
+    if (flightTick.consumedPointDefense) {
+      round.activeBuffs = (round.activeBuffs || []).filter(buff => buff.id !== 'point_defense');
+    }
+    if (flightTick.causeOfDeath && !round.causeOfDeath) round.causeOfDeath = flightTick.causeOfDeath;
+    for (const event of flightTick.newEvents) {
+      const eventMatchId = event.matchId || round.matchId || room.matchId || 'match';
+      const impactAction = {
+        playerId: null,
+        nickname: 'Flight Control',
+        abilityId: 'flight_event',
+        abilityName: event.damage > 0 ? 'Asteroid impact' : 'Point defense',
+        timestamp: event.at,
+        eventId: `${eventMatchId}:${event.id}`,
+        message: event.damage > 0
+          ? `Asteroid impact — hull −${event.damage}%`
+          : 'Point defense blocked an asteroid impact.'
+      };
+      round.lastAction = impactAction;
+      recordCrewEvent(round, { ...impactAction, id: `impact:${impactAction.eventId}`, type: 'collision' });
+      if (!event.asteroidThreatId) continue;
+      const threat = round.activeEmergencies.find(em => em.id === event.asteroidThreatId && !em.resolvedAt);
+      if (!threat) continue;
+      threat.failedAt = event.at;
+      threat.failureReason = 'impact';
+      round.resolvedEmergencies.push({ ...threat, failed: true });
+      round.activeEmergencies = round.activeEmergencies.filter(em => em.id !== threat.id);
+    }
+  }
 
   // ── Spawn due emergencies ──────────────────────────────────────
   const knownIds = new Set([
@@ -400,6 +508,9 @@ function tickGameState(room, now) {
           resolvedBy: null,
           resolvedByNickname: null
         });
+        if (item.typeId === 'rogue_asteroid' && round.flight) {
+          armAsteroidHazard(round.flight, item.id);
+        }
         knownIds.add(item.id);
       }
     }
@@ -411,7 +522,7 @@ function tickGameState(room, now) {
     if (em.resolvedAt) continue;
     const def = EMERGENCY_TYPES.find(e => e.id === em.typeId);
     if (!def || def.damagePerSec <= 0) continue;
-    if (em.typeId === 'oxygen_leak' && isBuffActive(round, 'stabilize')) continue;
+    if (em.typeId === 'oxygen_leak' && isBuffActive(round, 'stabilize', now)) continue;
     totalDmg += def.damagePerSec * deltaSec * dmgMult;
   }
   if (totalDmg > 0) {
@@ -451,35 +562,106 @@ function tickGameState(room, now) {
 
   // ── Win / Lose check ──────────────────────────────────────────
   if (round.hullIntegrity <= 0) return _endRound(room, now, 'lose');
-  if (elapsed >= round.duration)  return _endRound(room, now, 'win');
+  if (elapsed >= round.duration) {
+    if (!isMissionComplete(round)) {
+      round.causeOfDeath = 'mission_objective_incomplete';
+      return _endRound(room, now, 'lose');
+    }
+    return _endRound(room, now, 'win');
+  }
 
   return room;
 }
 
+function createMissionState(duration) {
+  const fullMission = duration >= ROUND_DURATION_MS;
+  return {
+    requiredEmergencyResolutions: fullMission ? COOPERATIVE_EMERGENCY_TARGET : 0,
+    requiredCrewMembers: fullMission ? COOPERATIVE_CREW_TARGET : 0,
+    crewMemberIds: []
+  };
+}
+
+function recordMissionContribution(round, playerId) {
+  const wasComplete = getMissionProgress(round).complete;
+  if (!round.mission || !Array.isArray(round.mission.crewMemberIds)) {
+    round.mission = round.mission || createMissionState(round.duration || ROUND_DURATION_MS);
+    round.mission.crewMemberIds = Array.isArray(round.mission.crewMemberIds) ? round.mission.crewMemberIds : [];
+  }
+  if (!round.mission.crewMemberIds.includes(playerId)) round.mission.crewMemberIds.push(playerId);
+  const progress = getMissionProgress(round);
+  if (!wasComplete && progress.complete) {
+    recordCrewEvent(round, {
+      type: 'mission',
+      nickname: 'Crew',
+      message: 'Shared response objectives secured. Protect the hull until mission end.',
+      timestamp: Date.now()
+    });
+  }
+  return progress;
+}
+
+function recordCrewEvent(round, event) {
+  round.crewEvents = Array.isArray(round.crewEvents) ? round.crewEvents : [];
+  const stableId = typeof event.id === 'string' && event.id ? event.id : null;
+  if (stableId) {
+    const existing = round.crewEvents.find(entry => entry.id === stableId);
+    if (existing) return existing;
+  }
+  round.crewEventSequence = (round.crewEventSequence || 0) + 1;
+  const entry = {
+    id: stableId || `crew_${round.crewEventSequence}`,
+    type: String(event.type || 'action').slice(0, 32),
+    nickname: String(event.nickname || 'Crew').slice(0, 20),
+    message: String(event.message || '').slice(0, 180),
+    timestamp: Number.isFinite(event.timestamp) ? event.timestamp : Date.now()
+  };
+  round.crewEvents.push(entry);
+  round.crewEvents = round.crewEvents.slice(-8);
+  return entry;
+}
+
+function getMissionProgress(round) {
+  const mission = round?.mission || {};
+  const requiredEmergencyResolutions = Math.max(0, mission.requiredEmergencyResolutions || 0);
+  const requiredCrewMembers = Math.max(0, mission.requiredCrewMembers || 0);
+  const emergenciesResolved = Math.max(0, round?.emergenciesResolved || 0);
+  const crewMembersContributed = new Set(mission.crewMemberIds || []).size;
+  return {
+    requiredEmergencyResolutions,
+    emergenciesResolved,
+    requiredCrewMembers,
+    crewMembersContributed,
+    complete: emergenciesResolved >= requiredEmergencyResolutions && crewMembersContributed >= requiredCrewMembers
+  };
+}
+
+function isMissionComplete(round) {
+  return getMissionProgress(round).complete;
+}
+
 function _endRound(room, now, outcome) {
   const round = room.round;
-  const survivedSeconds = Math.min(90, Math.floor((now - round.startedAt) / 1000));
-
-  let finalScore;
-  if (outcome === 'win') {
-    const remaining = Math.max(0, 90 - survivedSeconds);
-    finalScore = 1000
-      + remaining * 10
-      + Math.floor(round.hullIntegrity) * 5
-      + (round.emergenciesResolved || 0) * 75
-      + (round.speedBonuses || 0) * 25;
-  } else {
-    finalScore = Math.max(0,
-      Math.floor(round.hullIntegrity) * 5
-      + (round.emergenciesResolved || 0) * 75
-      + (round.speedBonuses || 0) * 25
-    );
-  }
+  const roundDurationSeconds = Math.ceil((round.duration || ROUND_DURATION_MS) / 1000);
+  const survivedSeconds = Math.min(roundDurationSeconds, Math.floor((now - round.startedAt) / 1000));
+  const remainingSeconds = outcome === 'win' ? Math.max(0, roundDurationSeconds - survivedSeconds) : 0;
+  const scoreBreakdown = {
+    missionComplete: outcome === 'win' ? 1000 : 0,
+    remainingTime: remainingSeconds * 10,
+    hullIntegrity: Math.floor(round.hullIntegrity) * 5,
+    emergenciesResolved: (round.emergenciesResolved || 0) * 75,
+    rapidResponses: (round.speedBonuses || 0) * 25,
+    combatScore: round.score || 0,
+    communicationsScore: round.communicationScore || 0
+  };
+  const finalScore = Object.values(scoreBreakdown).reduce((sum, points) => sum + points, 0);
 
   room.phase = 'results';
   round.outcome          = outcome;
   round.survivedSeconds  = survivedSeconds;
   round.finalScore       = Math.floor(finalScore);
+  round.roundDurationSeconds = roundDurationSeconds;
+  round.scoreBreakdown = scoreBreakdown;
   round.endedAt          = now;
   return room;
 }
@@ -488,18 +670,25 @@ function _endRound(room, now, outcome) {
 function generateRoomCode() {
   let code = '';
   for (let i = 0; i < 6; i++) {
-    code += ROOM_CODE_CHARS[Math.floor(Math.random() * ROOM_CODE_CHARS.length)];
+    code += ROOM_CODE_CHARS[randomInt(ROOM_CODE_CHARS.length)];
   }
   return code;
 }
 
 function generatePlayerId() {
-  return 'p_' + Math.random().toString(36).slice(2, 11) + '_' + Date.now().toString(36);
+  return 'p_' + randomBytes(24).toString('base64url');
 }
 
 // ── Module Exports ────────────────────────────────────────────────────────────
 module.exports = {
   ROUND_DURATION_MS,
+  COOPERATIVE_EMERGENCY_TARGET,
+  COOPERATIVE_CREW_TARGET,
+  createMissionState,
+  getMissionProgress,
+  recordMissionContribution,
+  recordCrewEvent,
+  isMissionComplete,
   MAX_PLAYERS,
   MIN_PLAYERS_TO_START,
   INITIAL_HULL,
@@ -510,6 +699,7 @@ module.exports = {
   generateRoomCode,
   generatePlayerId,
   generateEmergencySchedule,
+  createFlightState,
   assignRoles,
   canRoleResolve,
   tickGameState,
